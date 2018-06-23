@@ -1,16 +1,32 @@
 CC_INSTALL_PATH ?= /usr/local/bin
 
-STAMPS = .stamps
+.PHONY: all
+all: install cc-openstack
 
 .PHONY: install
 install:
-	ln -s $(CURDIR)/bin/cc $(CC_INSTALL_PATH)/cc
+	@ ln -sf $(CURDIR)/bin/cc $(CC_INSTALL_PATH)/cc
+	@ echo "Installed to $(CC_INSTALL_PATH)."
+	@ ecoh "Set CC_INSTALL_PATH to overwrite this."
 
-cc-openstack: $(STAMPS)/cc-openstack
+# Tool builds
 
-$(STAMPS)/cc-openstack: $(STAMPS)
-	cd $(notdir $@) && docker build -t $(notdir $@) .
-	touch $@
+# Get Git versions of individual tools
+CC_OPENSTACK_VERSION := $(shell git log -n1 --format=%h -- cc-openstack)
+
+STAMPS := .stamps
+
+define DOCKER_STAMP_RULE
+$(1): $(STAMPS)/$(1).docker-$(2)
+	touch $$@
+
+$(STAMPS)/$(1).docker-$(2): $(STAMPS)
+	cd $(1) && docker build -t $(1) .
+	touch $$@
+endef
+
+# Docker builds use a rule macro
+$(eval $(call DOCKER_STAMP_RULE,cc-openstack,$(CC_OPENSTACK_VERSION)))
 
 $(STAMPS):
 	mkdir -p $@

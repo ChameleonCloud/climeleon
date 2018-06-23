@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+declare -a env_vars=(
+  OS_PASSWORD
+  OS_USER_DOMAIN_NAME
+  OS_USERNAME
+)
+
+docker run --rm -it \
+  $(for e in "${env_vars[@]}"; do echo "-e $e " | tr -d '\n'; done) \
+  cc-openstack \
+  "$@"

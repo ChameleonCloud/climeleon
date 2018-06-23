@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+cloud="${1:-}"
+
+[[ -n "$cloud" ]] || {
+  cat <<USAGE
+Usage: $0 <cloud>
+
+Prints RC-compatible shell output for given cloud configuration.
+USAGE
+  exit 1
+}
+
+openstack --os-cloud="$cloud" configuration show --unmask -f json \
+  | jq -r 'to_entries 
+    | map({key:(.key|sub("auth.";"")|sub("^url$";"auth_url")), value})
+    | map(select(.key|test("auth|identity|interface|password|region|project|user"))) 
+    | map("OS_" + (.key|ascii_upcase) + "=" + (.value|tostring))[]'

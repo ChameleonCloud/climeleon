@@ -7,7 +7,7 @@ all: install cc-openstack
 install:
 	@ ln -sf $(CURDIR)/bin/cc $(CC_INSTALL_PATH)/cc
 	@ echo "Installed to $(CC_INSTALL_PATH)."
-	@ ecoh "Set CC_INSTALL_PATH to overwrite this."
+	@ echo "Set CC_INSTALL_PATH to overwrite this."
 
 # Tool builds
 

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# cssh - Chameleon ssh wrapper
+# 
+# Provides a wrapper around ssh with some specific use-cases
+# for accessing Chameleon hosts.
+
+host="$1"
+
+declare -a cmd
+
+# Replace this with your own implementation.
+# It takes in one argument - the name of the
+# site/account. You can map that to a password
+# however you want, as long as the password is
+# printed by this function.
+password() {
+  declare -A lpItems=( ["tacc"]="Chameleon" ["uc"]="UChicago" )
+  lpass show --password "${lpItems[$1]}" 
+}
+
+with_password() {
+  cmd+=(env SSHPASS="$1" sshpass -e)
+}
+
+case "$host" in
+  # Production TACC nodes - use TACC account and access
+  # via a development portal.
+  chameleon06.tacc.utexas.edu|master2.chameleon.tacc.utexas.edu)
+    with_password "$(password tacc)"
+    cmd+=(ssh -o'ProxyCommand=sshpass -e ssh -W %h:%p chameleon01.tacc.utexas.edu')
+    ;;
+  # Supser-production TACC nodes - these not only need access
+  # via a TACC portal, but they're only accessible via the master2
+  # node's root account. That's an additional layer of proxying
+  # and we just don't support it atm for reasons of sanity.
+  *.tacc.chameleoncloud.org)
+    echo "I'm sorry, I really can't help you there. You'll have to go"
+    echo "through a different route."
+    exit 1
+    ;;
+  # All other TACC nodes - use TACC account
+  *.tacc.utexas.edu)
+    with_password "$(password tacc)"
+    cmd+=(ssh)
+    ;;
+  # UChicago nodes - use TACC account and access via a development portal.
+  # Uses SSH key authentication via SSH agent for the last hop.
+  *.uc.chameleoncloud.org)
+    with_password "$(password tacc)"
+    cmd+=(ssh -o'ProxyCommand=ssh -W %h:%p chameleon01.tacc.utexas.edu')
+    ;;
+  # Everything else - just try it.
+  *)
+    echo "I don't really know how to handle $host, but I'll try." >&2
+    cmd+=(ssh)
+    ;;
+esac
+
+cmd+=("$@")
+"${cmd[@]}"

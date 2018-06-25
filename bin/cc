@@ -1,10 +1,30 @@
 #!/usr/bin/env bash
+set -e -u -o pipefail
+
+if ! command -v tacc_credentials >/dev/null; then
+  echo "Could not find your Chameleon credentials!"
+  echo "Please ensure there is a tacc_credentials() function"
+  echo "available from your current shell."
+  echo ""
+  echo "The function should print your username and password"
+  echo "on separate lines. For example:"
+  echo ""
+  echo "  tacc_credentials() {"
+  echo "    echo \"my_user\""
+  echo "    echo \"password\""
+  echo "  }"
+  echo "  # export for use in sub-shells"
+  echo "  export -f tacc_credentials"
+  exit 1
+fi
+
+set +e
+IFS=$'\n' read -rd '' -a creds <<<"$(tacc_credentials)"
 set -e
 
-declare -a env_vars=(
-  OS_PASSWORD
-  OS_USER_DOMAIN_NAME
-  OS_USERNAME
+env_vars=(
+OS_USERNAME="${creds[0]}"
+OS_PASSWORD="${creds[1]}"
 )
 
 docker run --rm -it \

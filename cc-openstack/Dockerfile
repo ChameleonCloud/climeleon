@@ -19,7 +19,7 @@ RUN apk add --no-cache libffi openssl
 RUN apk add --no-cache bash jq
 COPY clouds2rc /usr/local/bin/
 COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 RUN mkdir /work
 WORKDIR /work

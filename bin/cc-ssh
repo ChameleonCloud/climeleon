@@ -30,8 +30,8 @@ case "$host" in
   # Uses SSH key authentication via SSH agent for the last hop.
   *.uc.chameleoncloud.org)
     with_password "$TACC_PASSWORD"
-    cmd+=(ssh -o"User=$UC_USERNAME")
-    cmd+=(sshpass -e -o"ProxyCommand=ssh -W %h:%p $TACC_USERNAME@chameleon01.tacc.utexas.edu")
+    cmd+=(sshpass -e ssh -o"User=$UC_USERNAME")
+    cmd+=(-o"ProxyCommand=ssh -W %h:%p $TACC_USERNAME@chameleon01.tacc.utexas.edu")
     ;;
   # Everything else - just try it.
   *)

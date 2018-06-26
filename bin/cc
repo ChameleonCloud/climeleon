@@ -3,8 +3,8 @@ set -e -u -o pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if ! command -v tacc_credentials >/dev/null && \
-     command -v uc_credentials >/dev/null; then
+if ! ( command -v tacc_credentials >/dev/null && \
+       command -v uc_credentials >/dev/null ); then
   echo "Could not find your credentials!"
   echo "Please ensure there is a tacc_credentials() function"
   echo "(with your TACC account credentials) and a uc_credentials()"

@@ -35,9 +35,9 @@ declare -a uc_creds
 read_creds "tacc_creds" <<<"$(tacc_credentials)"
 read_creds "uc_creds" <<<"$(uc_credentials)"
 
-if [[ "$1" == "ssh" ]]; then
+# Shortcut for ssh subcommand
+if [[ "${1:-}" == "ssh" ]]; then
   shift
-  # Short-cut for ssh subcommand
   TACC_USERNAME="${tacc_creds[0]}" \
   TACC_PASSWORD="${tacc_creds[1]}" \
   UC_USERNAME="${uc_creds[0]}" \
@@ -46,9 +46,23 @@ if [[ "$1" == "ssh" ]]; then
   exit $?
 fi
 
+cloud="${1:-}"
+shift
+
+[[ -n "$cloud" ]] || {
+  cat <<USAGE
+Usage: $0 <cloud> <command>
+
+Executes <command> within a shell that is pre-configured for
+communication with a specific OpenStack cloud named <cloud>.
+USAGE
+  exit 1
+}
+
 env_vars=(
 OS_USERNAME="${tacc_creds[0]}"
 OS_PASSWORD="${tacc_creds[1]}"
+OS_CLOUD="$cloud"
 )
 
 docker run --rm -it \

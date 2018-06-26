@@ -18,6 +18,8 @@ RUN apk add --no-cache libffi openssl
 # Install dependencies for clouds2rc
 RUN apk add --no-cache bash jq
 COPY clouds2rc /usr/local/bin/
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT /entrypoint.sh
 
 RUN mkdir /work
 WORKDIR /work

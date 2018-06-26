@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 set -e -u -o pipefail
 
-if ! command -v tacc_credentials >/dev/null; then
-  echo "Could not find your Chameleon credentials!"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if ! command -v tacc_credentials >/dev/null && \
+     command -v uc_credentials >/dev/null; then
+  echo "Could not find your credentials!"
   echo "Please ensure there is a tacc_credentials() function"
-  echo "available from your current shell."
+  echo "(with your TACC account credentials) and a uc_credentials()"
+  echo "function (with your UChicago account credentials)"
+  echo "available from your current shell and sub-shells."
   echo ""
-  echo "The function should print your username and password"
+  echo "The functions should print your username and password"
   echo "on separate lines. For example:"
   echo ""
   echo "  tacc_credentials() {"
@@ -18,13 +23,32 @@ if ! command -v tacc_credentials >/dev/null; then
   exit 1
 fi
 
-set +e
-IFS=$'\n' read -rd '' -a creds <<<"$(tacc_credentials)"
-set -e
+read_creds() {
+  dest_array="$1"
+  set +e
+  IFS=$'\n' read -rd '' -a "$dest_array"
+  set -e
+}
+
+declare -a tacc_creds
+declare -a uc_creds
+read_creds "tacc_creds" <<<"$(tacc_credentials)"
+read_creds "uc_creds" <<<"$(uc_credentials)"
+
+if [[ "$1" == "ssh" ]]; then
+  shift
+  # Short-cut for ssh subcommand
+  TACC_USERNAME="${tacc_creds[0]}" \
+  TACC_PASSWORD="${tacc_creds[1]}" \
+  UC_USERNAME="${uc_creds[0]}" \
+  UC_PASSWORD="${uc_creds[1]}" \
+    exec "$DIR/cc-ssh" "$@"
+  exit $?
+fi
 
 env_vars=(
-OS_USERNAME="${creds[0]}"
-OS_PASSWORD="${creds[1]}"
+OS_USERNAME="${tacc_creds[0]}"
+OS_PASSWORD="${tacc_creds[1]}"
 )
 
 docker run --rm -it \

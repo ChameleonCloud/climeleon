@@ -5,7 +5,7 @@ all: install cc-openstack
 
 .PHONY: install
 install:
-	@ ln -sf $(CURDIR)/bin/cc $(CC_INSTALL_PATH)/cc
+	@ ln -sf $(CURDIR)/bin/* $(CC_INSTALL_PATH)
 	@ echo "Installed to $(CC_INSTALL_PATH)."
 	@ echo "Set CC_INSTALL_PATH to overwrite this."
 

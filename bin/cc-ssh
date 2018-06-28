@@ -6,7 +6,6 @@
 set -e -u -o pipefail
 
 tacc_jump_host="chameleon01.tacc.utexas.edu"
-uc_jump_host="admin01.uc.chameleoncloud.org"
 
 config="$(mktemp)"
 ssh="ssh -F $config"

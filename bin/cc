@@ -35,9 +35,8 @@ declare -a uc_creds
 read_creds "tacc_creds" <<<"$(tacc_credentials)"
 read_creds "uc_creds" <<<"$(uc_credentials)"
 
-# Shortcut for ssh subcommand
-if [[ "${1:-}" == "ssh" ]]; then
-  shift
+# Shortcut for ssh subcommands
+if [[ "${1:-}" =~ ssh|scp ]]; then
   TACC_USERNAME="${tacc_creds[0]}" \
   TACC_PASSWORD="${tacc_creds[1]}" \
   UC_USERNAME="${uc_creds[0]}" \

@@ -1,12 +1,49 @@
 #!/usr/bin/env bash
 set -e -u -o pipefail
 
-infile="${1:-}"
-lease="${2:-}"
-image="CC-CentOS7"
-key_name="prerelease_skylake"
+IMAGE="CC-CentOS7"
+LEASE=""
+KEY_NAME=""
+FORCE_ACTIVE=0
 
-TTY="$(tty)"
+for i in "$@"; do
+case $i in
+    --lease=*)
+    LEASE="${i#*=}"
+    shift
+    ;;
+    --key-name=*)
+    KEY_NAME="${i#*=}"
+    shift
+    ;;
+    --force-active)
+    FORCE_ACTIVE=1
+    shift
+    *)
+      # unknown option
+    ;;
+esac
+done
+
+INFILE="${1:-}"
+
+[[ -f "$INFILE" && -n "$LEASE" && -n "$KEY_NAME" ]] || {
+  cat <<USAGE
+Provisions nodes for a given lease. Defaults to $IMAGE image.
+
+Usage: $0 (--lease=<name>) (--key-name=<name>) [--force-active] <file>
+
+The input file can either be a list of server names, or a list of tab-separated server names
+and hypervisor UUIDs, with the first column being the server name. In the latter case, each
+server will be targeted towards a specific hypervisor.
+
+Options:
+  --lease=<name>    Name of lease.
+  --key-name=<name> Name of key pair.
+  --force-active    Forces target node(s) out of maintenance mode before provisioning.
+USAGE
+  exit 1
+}
 
 nicesleep() {
   for i in $(seq 1 $1); do printf ". "; sleep 1; done
@@ -21,7 +58,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   server_name="$(awk '{print $1}' <<<"$line")"
   uuid="$(awk '{print $2}' <<<"$line")"
 
-  if openstack server show "$server_name" <"$TTY" >/dev/null; then
+  if openstack server show "$server_name" >/dev/null; then
     echo "Skipping $server_name as an instance already exists"
     continue
   fi
@@ -32,11 +69,13 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     hints+=("query=[\"=\",\"\$hypervisor_hostname\",\"$uuid\"]")
 
     # If targeting specific node, support forcing out of maintenance mode
-    #if [[ "$(openstack baremetal node show "$uuid" -f json | jq .maintenance)" == "true" ]]; then
-    #  echo "Forcing $uuid out of maintenance mode"
-    #  openstack baremetal node maintenance unset "$uuid" <"$TTY"
-    #  nicesleep 5
-    #fi
+    if [[ "$FORCE_ACTIVE" == "1" ]]; then
+      if [[ "$(openstack baremetal node show "$uuid" -f json | jq .maintenance)" == "true" ]]; then
+        echo "Forcing $uuid out of maintenance mode"
+        openstack baremetal node maintenance unset "$uuid" <"$TTY"
+        nicesleep 5
+      fi
+    fi
   fi
 
   echo "Provisioning $server_name as $image"
@@ -47,6 +86,6 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     --key-name "$key_name" \
     --nic net-id="$sharednet_id" \
     $(for h in "${hints[@]}"; do echo "--hint $h "; done) \
-    "$server_name" <"$TTY"
+    "$server_name"
 done < "$infile"
 

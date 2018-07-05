@@ -70,7 +70,7 @@ OS_PASSWORD="${tacc_creds[1]}"
 OS_CLOUD="$cloud"
 )
 
-docker run --rm -i \
+exec docker run --rm -i \
   $(for e in "${env_vars[@]}"; do echo "-e $e " | tr -d '\n'; done) \
   cc-openstack \
   "$@"

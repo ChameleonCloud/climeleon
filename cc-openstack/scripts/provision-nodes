@@ -28,7 +28,7 @@ done
 
 INFILE="${1:-/dev/stdin}"
 
-[[ -f "$INFILE" && -n "$LEASE" && -n "$KEY_NAME" ]] || {
+[[ -n "$LEASE" && -n "$KEY_NAME" ]] || {
   cat <<USAGE
 Provisions nodes for a given lease. Defaults to $IMAGE image.
 

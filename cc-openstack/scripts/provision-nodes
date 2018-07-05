@@ -3,7 +3,7 @@ set -e -u -o pipefail
 
 IMAGE="CC-CentOS7"
 LEASE=""
-KEY_NAME=""
+KEY_PAIR=""
 FORCE_ACTIVE=0
 
 for i in "$@"; do
@@ -12,8 +12,8 @@ case $i in
     LEASE="${i#*=}"
     shift
     ;;
-    --key-name=*)
-    KEY_NAME="${i#*=}"
+    --key-pair=*)
+    KEY_PAIR="${i#*=}"
     shift
     ;;
     --force-active)
@@ -28,11 +28,11 @@ done
 
 INFILE="${1:-/dev/stdin}"
 
-[[ -n "$LEASE" && -n "$KEY_NAME" ]] || {
+[[ -n "$LEASE" && -n "$KEY_PAIR" ]] || {
   cat <<USAGE
 Provisions nodes for a given lease. Defaults to $IMAGE image.
 
-Usage: $(basename $0) (--lease=<name>) (--key-name=<name>) [--force-active] [<file>]
+Usage: $(basename $0) (--lease=<name>) (--key-pair=<name>) [--force-active] [<file>]
 
 The input file can either be a list of server names, or a list of tab-separated server names
 and hypervisor UUIDs, with the first column being the server name. In the latter case, each
@@ -42,7 +42,7 @@ If no file is specified, input is read from STDIN.
 
 Options:
   --lease=<name>    Name of lease.
-  --key-name=<name> Name of key pair.
+  --key-pair=<name> Name of key pair.
   --force-active    Forces target node(s) out of maintenance mode before provisioning.
 USAGE
   exit 1
@@ -55,7 +55,7 @@ nicesleep() {
 
 echo "Gathering network and reservation information"
 sharednet_id="$(openstack network list | grep sharednet1 | awk '{ print $2 }')"
-reservation_id="$(blazar lease-show "$lease" -f json | jq -r '.reservations | fromjson | .id')"
+reservation_id="$(blazar lease-show "$LEASE" -f json | jq -r '.reservations | fromjson | .id')"
 
 while IFS= read -r line || [[ -n "$line" ]]; do
   server_name="$(awk '{print $1}' <<<"$line")"
@@ -81,14 +81,14 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     fi
   fi
 
-  echo "Provisioning $server_name as $image"
+  echo "Provisioning $server_name as $IMAGE"
   openstack server create \
     --max-width 80 \
     --flavor baremetal \
-    --image "$image" \
-    --key-name "$key_name" \
+    --image "$IMAGE" \
+    --key-name "$KEY_PAIR" \
     --nic net-id="$sharednet_id" \
     $(for h in "${hints[@]}"; do echo "--hint $h "; done) \
     "$server_name"
-done < "$infile"
+done < "$INFILE"
 

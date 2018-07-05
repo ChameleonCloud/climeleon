@@ -19,6 +19,7 @@ case $i in
     --force-active)
     FORCE_ACTIVE=1
     shift
+    ;;
     *)
       # unknown option
     ;;
@@ -31,7 +32,7 @@ INFILE="${1:-}"
   cat <<USAGE
 Provisions nodes for a given lease. Defaults to $IMAGE image.
 
-Usage: $0 (--lease=<name>) (--key-name=<name>) [--force-active] <file>
+Usage: $(basename $0) (--lease=<name>) (--key-name=<name>) [--force-active] <file>
 
 The input file can either be a list of server names, or a list of tab-separated server names
 and hypervisor UUIDs, with the first column being the server name. In the latter case, each

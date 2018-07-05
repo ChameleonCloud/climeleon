@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+infile="${1:-}"
+lease="${2:-}"
+image="CC-CentOS7"
+key_name="prerelease_skylake"
+
+TTY="$(tty)"
+
+nicesleep() {
+  for i in $(seq 1 $1); do printf ". "; sleep 1; done
+  echo
+}
+
+echo "Gathering network and reservation information"
+sharednet_id="$(openstack network list | grep sharednet1 | awk '{ print $2 }')"
+reservation_id="$(blazar lease-show "$lease" -f json | jq -r '.reservations | fromjson | .id')"
+
+while IFS= read -r line || [[ -n "$line" ]]; do
+  server_name="$(awk '{print $1}' <<<"$line")"
+  uuid="$(awk '{print $2}' <<<"$line")"
+
+  if openstack server show "$server_name" <"$TTY" >/dev/null; then
+    echo "Skipping $server_name as an instance already exists"
+    continue
+  fi
+
+  declare -a hints=()
+  hints+=("reservation=$reservation_id")
+  if [[ -n "$uuid" ]]; then
+    hints+=("query=[\"=\",\"\$hypervisor_hostname\",\"$uuid\"]")
+
+    # If targeting specific node, support forcing out of maintenance mode
+    #if [[ "$(openstack baremetal node show "$uuid" -f json | jq .maintenance)" == "true" ]]; then
+    #  echo "Forcing $uuid out of maintenance mode"
+    #  openstack baremetal node maintenance unset "$uuid" <"$TTY"
+    #  nicesleep 5
+    #fi
+  fi
+
+  echo "Provisioning $server_name as $image"
+  openstack server create \
+    --max-width 80 \
+    --flavor baremetal \
+    --image "$image" \
+    --key-name "$key_name" \
+    --nic net-id="$sharednet_id" \
+    $(for h in "${hints[@]}"; do echo "--hint $h "; done) \
+    "$server_name" <"$TTY"
+done < "$infile"
+

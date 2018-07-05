@@ -22,7 +22,7 @@ WORKDIR /work
 RUN apk add --no-cache coreutils bash jq
 
 COPY clouds2rc /usr/local/bin/
-COPY scripts ./
+COPY scripts ./scripts
 COPY clouds.yaml ./
 
 COPY entrypoint.sh /entrypoint.sh

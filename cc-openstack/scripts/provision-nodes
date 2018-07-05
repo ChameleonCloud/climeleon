@@ -26,17 +26,19 @@ case $i in
 esac
 done
 
-INFILE="${1:-}"
+INFILE="${1:-/dev/stdin}"
 
 [[ -f "$INFILE" && -n "$LEASE" && -n "$KEY_NAME" ]] || {
   cat <<USAGE
 Provisions nodes for a given lease. Defaults to $IMAGE image.
 
-Usage: $(basename $0) (--lease=<name>) (--key-name=<name>) [--force-active] <file>
+Usage: $(basename $0) (--lease=<name>) (--key-name=<name>) [--force-active] [<file>]
 
 The input file can either be a list of server names, or a list of tab-separated server names
 and hypervisor UUIDs, with the first column being the server name. In the latter case, each
 server will be targeted towards a specific hypervisor.
+
+If no file is specified, input is read from STDIN.
 
 Options:
   --lease=<name>    Name of lease.

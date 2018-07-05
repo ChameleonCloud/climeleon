@@ -34,9 +34,16 @@ export -f tacc_credentials
 
 ## Commands
 
-### `ssh`/`scp`
+### `replacekey`
 
-> **Note**: requires [`sshpass`](https://gist.github.com/arunoda/7790979). Normally using this binary is considered very bad security practice. However, in our case, it is reasonable because we are never executing this on a shared environment and your passwords are never sent directly as arguments--rather, they are sourced as temporary env variables bound to the execution of the sshpass process on your local machine. It is used mostly because we have several systems using password-based authentication.
+This is a convenience utility for updating your SSH public key on all authentication servers. It works by simply taking you through a tour of all the login servers we use and then updating your `~/.ssh/authorized_keys` to contain a key you provide to the script. If it's your first time doing this, you will have to enter your password several times, as no key exists on the server for you yet and you'll have to fall back to password authentication.
+
+```
+# Note: this will replace all your existing public keys on the servers with the key you provide!
+$> cc replacekey "/path/to/public/key"
+```
+
+### `ssh`/`scp`
 
 This is a wrapper for SSH/SCP that handles authentication and the proxying of connections via login nodes for you.
 

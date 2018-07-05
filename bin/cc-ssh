@@ -1,25 +1,38 @@
 #!/usr/bin/env bash
 # cc-ssh - Chameleon ssh wrapper
-# 
+#
 # Provides a wrapper around ssh/scp with some specific use-cases
 # for accessing Chameleon hosts.
 set -e -u -o pipefail
 
 tacc_jump_host="chameleon01.tacc.utexas.edu"
+uc_jump_host="admin01.uc.chameleoncloud.org"
 
 config="$(mktemp)"
 ssh="ssh -F $config"
 cat >"$config" <<SSH_CONFIG
 Host chameleon06.tacc.utexas.edu master2.chameleon.tacc.utexas.edu
   User $TACC_USERNAME
-  ProxyCommand sshpass -e $ssh -W %h:%p $tacc_jump_host
+  ProxyJump $TACC_USERNAME@$tacc_jump_host
 
 Host *.tacc.utexas.edu
   User $TACC_USERNAME
 
+Host 10.*%tacc
+  ProxyCommand ssh -tF "$config" $tacc_jump_host sudo ssh cc@%h:%p
+
+Host *%tacc
+  ProxyCommand ssh -tF "$config" $tacc_jump_host sudo ssh %h:%p
+
 Host *.uc.chameleoncloud.org
   User $UC_USERNAME
-  ProxyJump $TACC_USERNAME@$tacc_jump_host
+  #ProxyJump $TACC_USERNAME@$tacc_jump_host
+
+Host 10.*%uc
+  ProxyCommand ssh -F "$config" $uc_jump_host sudo ssh cc@%h:%p
+
+Host *%uc
+  ProxyCommand ssh -F "$config" $uc_jump_host sudo ssh %h:%p
 SSH_CONFIG
 
 cleanup() {
@@ -30,6 +43,4 @@ trap cleanup EXIT
 cmd="${1:-ssh}"
 shift
 
-export SSHPASS="$TACC_PASSWORD"
-exec sshpass -e "$cmd" -F "$config" "$@"
-
+exec "$cmd" -F "$config" "$@"

@@ -35,15 +35,21 @@ declare -a uc_creds
 read_creds "tacc_creds" <<<"$(tacc_credentials)"
 read_creds "uc_creds" <<<"$(uc_credentials)"
 
+export TACC_USERNAME="${tacc_creds[0]}"
+export TACC_PASSWORD="${tacc_creds[1]}"
+export UC_USERNAME="${uc_creds[0]}"
+export UC_PASSWORD="${uc_creds[1]}"
+
 # Shortcut for ssh subcommands
 if [[ "${1:-}" =~ ssh|scp ]]; then
-  TACC_USERNAME="${tacc_creds[0]}" \
-  TACC_PASSWORD="${tacc_creds[1]}" \
-  UC_USERNAME="${uc_creds[0]}" \
-  UC_PASSWORD="${uc_creds[1]}" \
-    exec "$DIR/cc-ssh" "$@"
+  exec "$DIR/cc-ssh" "$@"
+  exit $?
+elif [[ "${1:-}" == "replacekey" ]]; then
+  shift # past command
+  exec "$DIR/cc-replacekey" "$@"
   exit $?
 fi
+
 
 cloud="${1:-}"
 shift

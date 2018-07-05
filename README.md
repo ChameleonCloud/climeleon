@@ -18,15 +18,29 @@ $> make
 
 ### Credentials
 
-The scripts need to use your credentials in order to call the OpenStack API and also log in to machines that use password authentication. To do this, the CLI expects to find two source functions called `tacc_credentials` and `uc_credentials`. If you do not have these functions sourced you will be notified and the script will bail. It is recommended that these functions feature some level of indirection, such as calling an external password manager to retrieve your credentials. For example, LastPass provides a `lpass` binary to assist. Mac OS X also has the `security` binary which acts as an intermediary to the OS X Keychain.
+The scripts need to use your credentials in order to call the OpenStack API and also ensure you can SSH to each site, which often involves authenticating as users with different names. To do this, the CLI expects to find two source functions called `tacc_credentials` and `uc_credentials`. If you do not have these functions sourced you will be notified and the script will bail. It is recommended that these functions feature some level of indirection, such as calling an external password manager to retrieve your credentials. For example, LastPass provides a `lpass` binary to assist. Mac OS X also has the `security` binary which acts as an intermediary to the OS X Keychain.
 
-Example:
+Examples:
+
+**Using LastPass**
 
 ```
 tacc_credentials() {
   # The output is expected to be username on line 1, password on line 2.
   echo "$(lpass --show --username tacc)"
   echo "$(lpass --show --password tacc)"
+}
+# Important: export for sub-shells
+export -f tacc_credentials
+```
+
+**Using 1Password**
+
+```
+tacc_credentials() {
+  # The output is expected to be username on line 1, password on line 2.
+  echo "$(op get item tacc | jq '.details.fields[] | select(.designation=="username").value')"
+  echo "$(op get item tacc | jq '.details.fields[] | select(.designation=="password").value')"
 }
 # Important: export for sub-shells
 export -f tacc_credentials

@@ -44,7 +44,7 @@ export UC_PASSWORD="${uc_creds[1]}"
 case "${1:-}" in
   docs)
     shift # past command
-    exec docker run --rm -i cc-docs "$@"
+    exec docker run --rm cc-docs "$@"
     exit $?
     ;;
   ssh|scp)

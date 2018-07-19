@@ -40,16 +40,25 @@ export TACC_PASSWORD="${tacc_creds[1]}"
 export UC_USERNAME="${uc_creds[0]}"
 export UC_PASSWORD="${uc_creds[1]}"
 
-# Shortcut for ssh subcommands
-if [[ "${1:-}" =~ ssh|scp ]]; then
-  exec "$DIR/cc-ssh" "$@"
-  exit $?
-elif [[ "${1:-}" == "replacekey" ]]; then
-  shift # past command
-  exec "$DIR/cc-replacekey" "$@"
-  exit $?
-fi
-
+# Shortcut for subcommands
+case "${1:-}" in
+  docs)
+    shift # past command
+    exec docker run --rm -i cc-docs "$@"
+    exit $?
+    ;;
+  ssh|scp)
+    exec "$DIR/cc-ssh" "$@"
+    exit $?
+    ;;
+  replacekey)
+    shift # past command
+    exec "$DIR/cc-replacekey" "$@"
+    exit $?
+    ;;
+  *)
+    ;;
+esac
 
 cloud="${1:-}"
 shift

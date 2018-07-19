@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+NC="\033[0m"
+BLUE="\033[01;34m"
+GRAY="\033[01;30m"
+WHITE="\033[01;37m"
+
+term="${1:-}"
+query_params="project=chameleoncloud&version=latest&language=en&q=$term"
+result_json="$(curl -SsL "https://readthedocs.org/api/v2/docsearch/?$query_params")"
+
+num_results="$(jq .results.hits.total <<<"$result_json")"
+
+if [[ "$num_results" -gt 0 ]]; then
+  echo "$num_results result(s) found for '$term':"
+  echo
+  results="$(jq -r ".results.hits.hits | to_entries | map(select(.key < 5)) |
+    map(
+      \"  \" + ((.key + 1)|tostring) + \". \" + .value.fields.title[0] + \"\n\" +
+      \"\\${BLUE}     \" + .value.fields.link + \"\\${NC}\n\" +
+      \"\\${GRAY}     | \" + (
+        .value.highlight.content[0]|gsub(\"\n\";\"\n     | \")
+        | gsub(\"<em>\";\"\\${WHITE}\")
+        | gsub(\"</em>\";\"\\${GRAY}\")
+      ) + \"\\${NC}\n\"
+    )[]" <<<"$result_json")"
+  echo -e "$results"
+  echo
+else
+  echo "No results found for '$term'."
+  exit 1
+fi

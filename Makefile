@@ -1,7 +1,7 @@
 CC_INSTALL_PATH ?= /usr/local/bin
 
 .PHONY: all
-all: install cc-openstack
+all: install cc-docs cc-openstack
 
 .PHONY: install
 install:
@@ -12,6 +12,7 @@ install:
 # Tool builds
 
 # Get Git versions of individual tools
+CC_DOCS_VERSION := $(shell git log -n1 --format=%h -- cc-docs)
 CC_OPENSTACK_VERSION := $(shell git log -n1 --format=%h -- cc-openstack)
 
 STAMPS := .stamps
@@ -26,6 +27,7 @@ $(STAMPS)/$(1).docker-$(2): $(STAMPS)
 endef
 
 # Docker builds use a rule macro
+$(eval $(call DOCKER_STAMP_RULE,cc-docs,$(CC_DOCS_VERSION)))
 $(eval $(call DOCKER_STAMP_RULE,cc-openstack,$(CC_OPENSTACK_VERSION)))
 
 $(STAMPS):

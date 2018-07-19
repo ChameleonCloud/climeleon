@@ -12,7 +12,7 @@ FROM base
 
 COPY --from=builder /install /usr/local
 
-# Install runtime libraries needed for crypto 
+# Install runtime libraries needed for crypto
 RUN apk add --no-cache libffi openssl
 
 RUN mkdir /work
@@ -23,8 +23,7 @@ RUN apk add --no-cache coreutils bash jq
 
 COPY clouds2rc /usr/local/bin/
 COPY scripts ./scripts
-COPY clouds.yaml ./
+COPY clouds*.yaml ./
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
-

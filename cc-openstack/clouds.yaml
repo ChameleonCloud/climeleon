@@ -1,56 +1,31 @@
 clouds:
-  CHI@UC:
-    interface: public
-    identity_api_version: '3'
-    auth:
-      auth_url: https://chi.uc.chameleoncloud.org:5000/v3
-      project_name: openstack
-      project_domain_name: Default
-      user_domain_name: Default
-    region_name: CHI@UC
-  CHI@TACC:
-    interface: public
-    identity_api_version: '3'
-    auth:
-      auth_url: https://chi.tacc.chameleoncloud.org:5000/v3
-      project_name: openstack
-      project_domain_name: Default
-      user_domain_name: Default
+  tacc:
+    cloud: chameleon
     region_name: CHI@TACC
-  KVM@TACC:
-    interface: public
-    identity_api_version: '3'
-    auth:
-      auth_url: https://openstack.tacc.chameleoncloud.org:5000/v3
-      project_name: openstack
-      project_domain_name: Default
-      user_domain_name: Default
-    region_name: RegionOne
-  CHI@UC-sandbox:
-    interface: public
-    identity_api_version: '3'
-    auth:
-      auth_url: https://chi.uc.chameleoncloud.org:5000/v3
-      project_name: Chameleon
-      project_domain_name: Default
-      user_domain_name: Default
-    region_name: CHI@UC
-  CHI@TACC-sandbox:
-    interface: public
-    identity_api_version: '3'
-    auth:
-      auth_url: https://chi.tacc.chameleoncloud.org:5000/v3
-      project_name: Chameleon
-      project_domain_name: Default
-      user_domain_name: Default
+  tacc_admin:
+    cloud: chameleon
     region_name: CHI@TACC
-  KVM@TACC-sandbox:
-    interface: public
-    identity_api_version: '3'
     auth:
-      auth_url: https://openstack.tacc.chameleoncloud.org:5000/v3
-      project_name: Chameleon
-      project_domain_name: Default
-      user_domain_name: Default
-    region_name: RegionOne
+      project_name: openstack
+  tacc_dev:
+    cloud: chameleon
+    region_name: CHI_DEV
+    auth:
+      auth_url: https://dev.tacc.chameleoncloud.org:5000/v3
 
+  uc:
+    cloud: chameleon
+    region_name: CHI@UC
+  uc_admin:
+    cloud: chameleon
+    region_name: CHI@UC
+    auth:
+      project_name: openstack
+  uc_dev:
+    cloud: chameleon
+    region_name: CHI_DEV_UC
+    auth:
+      auth_url: https://dev.uc.chameleoncloud.org:5000/v3
+
+  kvm:
+    cloud: chameleon_kvm

@@ -19,12 +19,14 @@ result_json="$(curl -G -SsL \
 num_results="$(jq .results.hits.total <<<"$result_json")"
 
 if [[ "$num_results" -gt 0 ]]; then
-  echo "$num_results result(s) found for '$term':"
+  extra=""
+  if [[ "$num_results" -gt 5 ]]; then extra=" (showing first 5)"; fi
+  echo "$num_results result(s) found for '$term'$extra:"
   echo
   results="$(jq -r ".results.hits.hits | to_entries | map(select(.key < 5)) |
     map(
       \"  \" + ((.key + 1)|tostring) + \". \" + .value.fields.title[0] + \"\n\" +
-      \"\\${BLUE}     \" + .value.fields.link + \"\\${NC}\n\" +
+      \"\\${BLUE}     \" + .value.fields.link + \".html\\${NC}\n\" +
       \"\\${GRAY}     | \" + (
         .value.highlight.content[0]|gsub(\"\n\";\"\n     | \")
         | gsub(\"<em>\";\"\\${WHITE}\")

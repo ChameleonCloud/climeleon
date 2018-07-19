@@ -8,7 +8,13 @@ WHITE="\033[01;37m"
 
 term="${1:-}"
 query_params="project=chameleoncloud&version=latest&language=en&q=$term"
-result_json="$(curl -SsL "https://readthedocs.org/api/v2/docsearch/?$query_params")"
+result_json="$(curl -G -SsL \
+  --data project=chameleoncloud \
+  --data version=latest \
+  --data language=en \
+  --data-urlencode "q=$term" \
+  "https://readthedocs.org/api/v2/docsearch/")"
+
 
 num_results="$(jq .results.hits.total <<<"$result_json")"
 

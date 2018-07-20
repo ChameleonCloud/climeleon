@@ -18,35 +18,47 @@ $> make
 
 ### Credentials
 
-The scripts need to use your credentials in order to call the OpenStack API and also ensure you can SSH to each site, which often involves authenticating as users with different names. To do this, the CLI expects to find two source functions called `tacc_credentials` and `uc_credentials`. If you do not have these functions sourced you will be notified and the script will bail. It is recommended that these functions feature some level of indirection, such as calling an external password manager to retrieve your credentials. For example, LastPass provides a `lpass` binary to assist. Mac OS X also has the `security` binary which acts as an intermediary to the OS X Keychain.
+The scripts need to use your credentials in order to call the OpenStack API. To do this, it looks for a function in your shell called `chameleon_password`, which you should provide. If you do not have this function sourced you will be notified and the script will bail. It is recommended that the function feature some level of indirection, such as calling an external password manager to retrieve your credentials. For example, LastPass provides a `lpass` binary to assist. Mac OS X also has the `security` binary which acts as an intermediary to the OS X Keychain.
 
 Examples:
 
 **Using LastPass**
 
 ```
-tacc_credentials() {
-  # The output is expected to be username on line 1, password on line 2.
-  echo "$(lpass --show --username tacc)"
-  echo "$(lpass --show --password tacc)"
+chameleon_password() {
+  echo "$(lpass --show --password chameleon)"
 }
 # Important: export for sub-shells
-export -f tacc_credentials
+export -f chameleon_password
 ```
 
 **Using 1Password**
 
 ```
-tacc_credentials() {
-  # The output is expected to be username on line 1, password on line 2.
-  echo "$(op get item tacc | jq '.details.fields[] | select(.designation=="username").value')"
-  echo "$(op get item tacc | jq '.details.fields[] | select(.designation=="password").value')"
+chameleon_password() {
+  echo "$(op get item chameleon | jq '.details.fields[] | select(.designation=="password").value')"
 }
 # Important: export for sub-shells
-export -f tacc_credentials
+export -f chameleon_password
 ```
 
+In order to log in to the various nodes, sometimes it's necessary to log in as various different user names. This can be controlled via the following env variables:
+
+  * `ANL_USER`: Argonne user account name
+  * `TACC_USER`: TACC user account name (usually also your Chameleon one)
+  * `UC_USER`: UChicago user account name
+  * `CHAMELEON_USER`: Chameleon user account name
+
 ## Commands
+
+### `docs`
+
+This is a little convenience tool that currently just searches the (public) Chameleon docs for a term and shows you which pages matched. Just saves a browser window trip.
+
+```
+# Find doc pages referencing baremetal nodes
+$> cc docs search "baremetal"
+```
 
 ### `replacekey`
 
@@ -84,9 +96,9 @@ The default behavior of `cc` is to select a cloud configuration for you and then
 
 ```
 # Run an `openstack` command against CHI@TACC
-$> cc CHI@TACC openstack project list
+$> cc tacc openstack project list
 
 # Run a `blazar` command against CHI@UC
-$> cc CHI@UC blazar host-list
+$> cc uc blazar host-list
 ```
 

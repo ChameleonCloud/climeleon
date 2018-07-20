@@ -35,4 +35,3 @@ for host in "${host_tour[@]}"; do
 done
 
 echo "All done!"
-

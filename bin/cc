@@ -3,42 +3,11 @@ set -e -u -o pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if ! ( command -v tacc_credentials >/dev/null && \
-       command -v uc_credentials >/dev/null ); then
-  echo "Could not find your credentials!"
-  echo "Please ensure there is a tacc_credentials() function"
-  echo "(with your TACC account credentials) and a uc_credentials()"
-  echo "function (with your UChicago account credentials)"
-  echo "available from your current shell and sub-shells."
-  echo ""
-  echo "The functions should print your username and password"
-  echo "on separate lines. For example:"
-  echo ""
-  echo "  tacc_credentials() {"
-  echo "    echo \"my_user\""
-  echo "    echo \"password\""
-  echo "  }"
-  echo "  # export for use in sub-shells"
-  echo "  export -f tacc_credentials"
-  exit 1
-fi
-
-read_creds() {
-  dest_array="$1"
-  set +e
-  IFS=$'\n' read -rd '' -a "$dest_array"
-  set -e
-}
-
-declare -a tacc_creds
-declare -a uc_creds
-read_creds "tacc_creds" <<<"$(tacc_credentials)"
-read_creds "uc_creds" <<<"$(uc_credentials)"
-
-export TACC_USERNAME="${tacc_creds[0]}"
-export TACC_PASSWORD="${tacc_creds[1]}"
-export UC_USERNAME="${uc_creds[0]}"
-export UC_PASSWORD="${uc_creds[1]}"
+export ANL_USER="${ANL_USER:-$USER}"
+export UC_USER="${UC_USER:-$USER}"
+# A Chameleon user account is by default the same as the TACC one.
+export TACC_USER="${TACC_USER:-${CHAMELEON_USER:-$USER}}"
+export CHAMELEON_USER="${CHAMELEON_USER:-$TACC_USER}"
 
 # Shortcut for subcommands
 case "${1:-}" in
@@ -73,9 +42,28 @@ USAGE
   exit 1
 }
 
+password=""
+if ! command -v chameleon_password >/dev/null; then
+  echo "Could not find your Chameleon password!"
+  echo "Please ensure there is a chameleon_password() function"
+  echo "(which prints your Chameleon Cloud password) available"
+  echo "from your current shell and sub-shells."
+  echo ""
+  echo "For example:"
+  echo ""
+  echo "  chameleon_password() {"
+  echo "    echo \"password\""
+  echo "  }"
+  echo "  # export for use in sub-shells"
+  echo "  export -f chameleon_password"
+  exit 1
+else
+  password="$(chameleon_password)"
+fi
+
 env_vars=(
-OS_USERNAME="${tacc_creds[0]}"
-OS_PASSWORD="${tacc_creds[1]}"
+OS_USERNAME="$CHAMELEON_USER"
+OS_PASSWORD="$password"
 OS_CLOUD="$cloud"
 )
 

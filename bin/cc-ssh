@@ -6,17 +6,17 @@
 set -e -u -o pipefail
 
 tacc_jump_host="chameleon01.tacc.utexas.edu"
-uc_jump_host="admin01.uc.chameleoncloud.org"
+anl_jump_host="login.mcs.anl.gov"
 
 config="$(mktemp)"
 ssh="ssh -F $config"
 cat >"$config" <<SSH_CONFIG
 Host chameleon06.tacc.utexas.edu master2.chameleon.tacc.utexas.edu
-  User $TACC_USERNAME
-  ProxyJump $TACC_USERNAME@$tacc_jump_host
+  User $TACC_USER
+  ProxyJump $TACC_USER@$tacc_jump_host
 
 Host *.tacc.utexas.edu
-  User $TACC_USERNAME
+  User $TACC_USER
 
 Host 10.*%tacc
   ProxyCommand ssh -tF "$config" $tacc_jump_host sudo ssh cc@%h:%p
@@ -25,14 +25,14 @@ Host *%tacc
   ProxyCommand ssh -tF "$config" $tacc_jump_host sudo ssh %h:%p
 
 Host *.uc.chameleoncloud.org
-  User $UC_USERNAME
-  #ProxyJump $TACC_USERNAME@$tacc_jump_host
+  User $UC_USER
+  ProxyJump $ANL_USER@$anl_jump_host
 
 Host 10.*%uc
-  ProxyCommand ssh -F "$config" $uc_jump_host sudo ssh cc@%h:%p
+  ProxyCommand ssh -F "$config" $anl_jump_host sudo ssh cc@%h:%p
 
 Host *%uc
-  ProxyCommand ssh -F "$config" $uc_jump_host sudo ssh %h:%p
+  ProxyCommand ssh -F "$config" $anl_jump_host sudo ssh %h:%p
 SSH_CONFIG
 
 cleanup() {

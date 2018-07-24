@@ -102,3 +102,8 @@ $> cc tacc openstack project list
 $> cc uc blazar host-list
 ```
 
+You can also spawn an interactive shell that has access to all of these commands:
+
+```
+$> cc uc shell
+```

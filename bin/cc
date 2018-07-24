@@ -61,13 +61,15 @@ else
   password="$(chameleon_password)"
 fi
 
-env_vars=(
-OS_USERNAME="$CHAMELEON_USER"
-OS_PASSWORD="$password"
-OS_CLOUD="$cloud"
-)
+cmd="$@"
+docker_options=(--rm --interactive)
+docker_options+=(-e "OS_USERNAME=$CHAMELEON_USER")
+docker_options+=(-e "OS_PASSWORD=$password")
+docker_options+=(-e "OS_CLOUD=$cloud")
+if [[ "${1:-}" == "shell" ]]; then
+  docker_options+=(--tty)
+  cmd="bash"
+  shift
+fi
 
-exec docker run --rm -i \
-  $(for e in "${env_vars[@]}"; do echo "-e $e " | tr -d '\n'; done) \
-  cc-openstack \
-  "$@"
+exec docker run "${docker_options[@]}" cc-openstack $cmd

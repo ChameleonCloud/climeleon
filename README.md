@@ -7,6 +7,8 @@ This provides a new tool called `cc` that can make some operational tasks easier
   - Reducing the overhead required to ssh/scp on to specific machines
   - Standardizing the execution environment for Python OpenStack clients
   - Providing a set of default OpenStack client configurations and a means of easily swapping them out.
+  - Making RPM builds easier
+  - Giving you a clownish way of looking up docs for Chameleon
 
 ## Setup
 
@@ -67,6 +69,21 @@ This is a convenience utility for updating your SSH public key on all authentica
 ```
 # Note: this will replace all your existing public keys on the servers with the key you provide!
 $> cc replacekey "/path/to/public/key"
+```
+
+### `rpm (build|gen-patches)`
+
+This is an RPM workflow utility for packaging up a forked OpenStack project. The general workflow for packaging RPMs is to first create a set of patches that bring an upstream release in-line with our changes, then copying those patches over to a forked distgit repo for the OpenStack project, updating the spec file to apply the patches, bump the version, then build the RPM package. You can accomplish that by doing something like this:
+
+```
+# 1. Generate patches (replace '10.0.1' with whatever upstream OpenStack version you're working against for this project)
+$> cd path/to/openstack/project; cc rpm gen-patches '10.0.1'
+# 2. Copy patches to accompanying distgit repo
+$> cp *.patch ../project-distgit/
+# 3. Update spec file
+$> cd ../project-distgit; vi project.spec
+# 4. Generate RPM
+$> cc rpm build
 ```
 
 ### `ssh`/`scp`

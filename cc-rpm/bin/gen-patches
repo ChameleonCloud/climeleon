@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+tag="$1"
+
+if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+  echo "ERROR: Couldn't find tag '$tag' in repo."
+  echo "Maybe you haven't fetched all tags from the remote?"
+  exit 1
+fi
+
+echo "Making patches from current working directory against tag='$tag'"
+patches="$(git format-patch "$tag")"
+
+if [[ -n "$patches" ]]; then
+  echo
+  echo "Created patch files:"
+  echo
+  sed 's/^/  * /g' <<<"$patches"
+  echo
+  echo "You should now move these patch files to the distgit repo for your service."
+else
+  echo "No patch files outputted!"
+  exit 1
+fi
+

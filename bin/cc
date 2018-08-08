@@ -16,6 +16,12 @@ case "${1:-}" in
     exec docker run --rm cc-docs "$@"
     exit $?
     ;;
+  rpm)
+    shift # past command
+    # We mount the current working directory as /work
+    exec docker run --rm -v "$PWD:/work" cc-rpm "$@"
+    exit $?
+    ;;
   ssh|scp)
     exec "$DIR/cc-ssh" "$@"
     exit $?

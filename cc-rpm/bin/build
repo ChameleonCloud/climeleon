@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+spec_file="$(find -name *.spec)"
+echo "Building RPM from $spec_file"
+
+mkdir -p /root/rpmbuild/SOURCES
+spectool -g -R "$spec_file"
+cp -R ./* /root/rpmbuild/SOURCES/
+rpmbuild -bs "$spec_file"
+
+echo "Copying built RPMs to your working directory"
+cp /root/rpmbuild/SRPMS/* /work/
+
+echo "Success!"
+

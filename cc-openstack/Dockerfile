@@ -17,6 +17,8 @@ RUN apk add --no-cache libffi openssl
 
 RUN mkdir /work
 WORKDIR /work
+# Provide a volume-mount for a current working directory (of the host)
+VOLUME ["/mnt/cwd"]
 
 # Install dependencies for scripts
 RUN apk add --no-cache coreutils bash jq
@@ -27,3 +29,4 @@ COPY clouds*.yaml ./
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
+

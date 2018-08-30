@@ -1,32 +1,39 @@
-0#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -e -u -o pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 key="${1:-}"
+host="${2:-}"
 
 [[ -f "$key" ]] || {
   cat <<USAGE
-Usage: $0 <pubkey_file>
+Usage: $0 <pubkey_file> [host]
+
+Options:
+  host: Only replace key on specified hostname. Default behavior is to replace
+        on all known hostnames.
 USAGE
   exit 1
 }
 
-host_tour=(
-# Add to chameleon01-06 (skip 05, it uses LDAP auth)
-$(for i in $(seq 1 6); do [[ "$i" != "5" ]] && echo "chameleon0${i}.tacc.utexas.edu"; done)
-master2.chameleon.tacc.utexas.edu
-# Add to admin01-02
-$(for i in $(seq 1 2); do echo "admin0${i}.uc.chameleoncloud.org"; done)
-)
-
-echo "${host_tour[@]}"
-
-echo "Updating your SSH key to ${key} on all hosts."
-echo
-echo "Be prepared to enter your password a lot of times"
-echo "if this is your first time doing this."
-echo
+if [[ -n "$host" ]]; then
+  host_tour=("$host")
+else
+  host_tour=(
+    # Add to chameleon01-06
+    $(for i in $(seq 1 6); do echo "chameleon0${i}.tacc.utexas.edu"; done)
+    dev.chameleon.tacc.utexas.edu
+    master2.chameleon.tacc.utexas.edu
+    # Add to admin01-02
+    $(for i in $(seq 1 2); do echo "admin0${i}.uc.chameleoncloud.org"; done)
+  )
+  echo "Updating your SSH key to ${key} on all hosts."
+  echo
+  echo "Be prepared to enter your password a lot of times"
+  echo "if this is your first time doing this."
+  echo
+fi
 
 for host in "${host_tour[@]}"; do
   echo "Updating key on $host"

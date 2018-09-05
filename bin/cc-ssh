@@ -11,11 +11,11 @@ anl_jump_host="login.mcs.anl.gov"
 config="$(mktemp)"
 ssh="ssh -F $config"
 cat >"$config" <<SSH_CONFIG
-Host *.chameleon.tacc.utexas.edu chameleon06.tacc.utexas.edu 
+Host *.chameleon.tacc.utexas.edu chameleon06.tacc.utexas.edu
   User $TACC_USER
   ProxyJump $TACC_USER@$tacc_jump_host
 
-Host *.tacc.utexas.edu
+Host *.tacc.utexas.edu *.tacc.chameleoncloud.org
   User $TACC_USER
 
 Host *.uc.chameleoncloud.org

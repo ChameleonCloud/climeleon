@@ -1,7 +1,14 @@
 CC_INSTALL_PATH ?= /usr/local/bin
 
+REGISTRY := docker.chameleoncloud.org
+
+CONTAINERS := cc-docs cc-openstack cc-rpm
+
 .PHONY: all
-all: install cc-docs cc-openstack cc-rpm
+all: install $(CONTAINERS)
+
+.PHONY: publish
+publish: $(CONTAINERS:%=%-publish)
 
 .PHONY: install
 install:
@@ -12,20 +19,27 @@ install:
 # Tool builds
 STAMPS := .stamps
 
-container_version = $(shell git log -n1 --format=%h -- $(1))
+$(STAMPS):
+	mkdir -p $@
+
 define container_rule
-$(1): $(STAMPS)/$(1).docker-$(call container_version,$(1))
+$(eval VERSION := $(shell git log -n1 --format=%h -- $(1)))
+$(eval IMAGE := $(REGISTRY)/$(1))
+
+$(1): $(STAMPS)/$(1).docker-$(VERSION)
 	touch $$@
 
-$(STAMPS)/$(1).docker-$(call container_version,$(1)): $(STAMPS)
-	cd $(1) && docker build -t $(1) .
+.PHONY: $(1)-publish
+$(1)-publish: $(1)
+	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
+	docker push $(IMAGE):$(VERSION)
+	docker push $(IMAGE):latest
+
+$(STAMPS)/$(1).docker-$(VERSION): $(STAMPS)
+	cd $(1) && docker build -t $(IMAGE):$(VERSION) .
 	touch $$@
 endef
 
 # Docker builds use a rule macro
-$(eval $(call container_rule,cc-docs))
-$(eval $(call container_rule,cc-openstack))
-$(eval $(call container_rule,cc-rpm))
+$(foreach name, $(CONTAINERS), $(eval $(call container_rule,$(name))))
 
-$(STAMPS):
-	mkdir -p $@

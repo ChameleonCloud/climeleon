@@ -9,17 +9,19 @@ export UC_USER="${UC_USER:-$USER}"
 export TACC_USER="${TACC_USER:-${CHAMELEON_USER:-$USER}}"
 export CHAMELEON_USER="${CHAMELEON_USER:-$TACC_USER}"
 
+registry="docker.chameleoncloud.org"
+
 # Shortcut for subcommands
 case "${1:-}" in
   docs)
     shift # past command
-    exec docker run --rm cc-docs "$@"
+    exec docker run --rm "$registry/cc-docs" "$@"
     exit $?
     ;;
   rpm)
     shift # past command
     # We mount the current working directory as /work
-    exec docker run --rm -v "$PWD:/work" cc-rpm "$@"
+    exec docker run --rm -v "$PWD:/work" "$registry/cc-rpm" "$@"
     exit $?
     ;;
   ssh|scp)
@@ -78,4 +80,4 @@ if [[ "${1:-}" == "shell" ]]; then
   shift
 fi
 
-exec docker run "${docker_options[@]}" cc-openstack "${cmd:-$@}"
+exec docker run "${docker_options[@]}" "$registry/cc-openstack" "${cmd:-$@}"

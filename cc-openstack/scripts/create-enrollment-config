@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+out="
+# Node enrollment configuration
+# Generated: $(date)
+"
+
+baremetal() {
+  openstack baremetal "$@"
+}
+
+extract_json() {
+  jq -r ".$2" <<<"$1"
+}
+
+for node in $@; do
+  node_json="$(baremetal node show "$node" -f json)"
+  node_uuid="$(extract_json "$node_json" "uuid")"
+  port_json="$(baremetal port show "$(baremetal port list --node "$node_uuid" -f value -c UUID)")"
+  host_json="$(blazar host-show "$node_uuid")"
+
+  out+="[$(extract_json "$node_json" "name")]\n"
+  out+="ipmi_username = $(extract_json "$node_json" "driver_info.ipmi_username")\n"
+  out+="ipmi_password = $(extract_json "$node_json" "driver_info.ipmi_password")\n"
+  out+="ipmi_address = $(extract_json "$node_json" "driver_info.ipmi_address")\n"
+  out+="ipmi_terminal_port = $(extract_json "$node_json" "driver_info.ipmi_terminal_port")\n"
+  out+="switch_name = $(extract_json "$port_json" "local_link_connection.switch_info")\n"
+  out+="switch_port_id = $(extract_json "$port_json" "local_link_connection.port_id")\n"
+  out+="mac_address = $(extract_json "$port_json" "address")\n"
+  out+="node_type = $(extract_json "$host_json" "node_type")\n"
+  out+="\n"
+done
+
+echo -e "$out"

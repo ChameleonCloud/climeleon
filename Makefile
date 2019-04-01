@@ -42,4 +42,3 @@ endef
 
 # Docker builds use a rule macro
 $(foreach name, $(CONTAINERS), $(eval $(call container_rule,$(name))))
-

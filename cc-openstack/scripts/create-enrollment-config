@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 set -e -u -o pipefail
 
-out="
-# Node enrollment configuration
+out="# Node enrollment configuration
 # Generated: $(date)
 "
+
+log() {
+  echo "$@" >&2
+}
 
 baremetal() {
   openstack baremetal "$@"
@@ -14,15 +17,22 @@ extract_json() {
   jq -r ".$2" <<<"$1"
 }
 
+if [[ -z "${IPMI_PASSWORD:-}" ]]; then
+  log "Warn: No IPMI password defined. This cannot be retrieved from OpenStack's
+APIs for security reasons. Please set IPMI_PASSWORD to fill in this value at
+creation time, or else edit the file after generation."
+fi
+
 for node in $@; do
+  log "Processing node $node..."
   node_json="$(baremetal node show "$node" -f json)"
   node_uuid="$(extract_json "$node_json" "uuid")"
-  port_json="$(baremetal port show "$(baremetal port list --node "$node_uuid" -f value -c UUID)")"
-  host_json="$(blazar host-show "$node_uuid")"
+  port_json="$(baremetal port show "$(baremetal port list --node "$node_uuid" -f value -c UUID)" -f json)"
+  host_json="$(blazar host-show "$node_uuid" -f json)"
 
   out+="[$(extract_json "$node_json" "name")]\n"
   out+="ipmi_username = $(extract_json "$node_json" "driver_info.ipmi_username")\n"
-  out+="ipmi_password = $(extract_json "$node_json" "driver_info.ipmi_password")\n"
+  out+="ipmi_password = ${IPMI_PASSWORD:-$(extract_json "$node_json" "driver_info.ipmi_password")}\n"
   out+="ipmi_address = $(extract_json "$node_json" "driver_info.ipmi_address")\n"
   out+="ipmi_terminal_port = $(extract_json "$node_json" "driver_info.ipmi_terminal_port")\n"
   out+="switch_name = $(extract_json "$port_json" "local_link_connection.switch_info")\n"
@@ -32,4 +42,5 @@ for node in $@; do
   out+="\n"
 done
 
+log "Done."
 echo -e "$out"

@@ -2,11 +2,13 @@ FROM python:2-alpine3.7 as base
 
 FROM base as builder
 
-RUN apk add --no-cache build-base linux-headers libffi-dev openssl-dev python-dev
+RUN apk add --no-cache build-base curl linux-headers libffi-dev openssl-dev python-dev
 
 RUN mkdir /install
 COPY requirements.txt /requirements.txt
-RUN pip install --install-option="--prefix=/install" -r requirements.txt
+RUN curl -o /upper-constraints.txt https://raw.githubusercontent.com/openstack/requirements/stable/rocky/upper-constraints.txt \
+  && pip install --install-option="--prefix=/install" --no-build-isolation \
+    -r requirements.txt -c upper-constraints.txt
 
 FROM base
 

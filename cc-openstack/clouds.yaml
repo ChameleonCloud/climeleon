@@ -20,23 +20,23 @@ clouds:
     cloud: chameleon
     region_name: CHI@UC
     auth:
-      auth_url: https://chi.uc.chameleoncloud.org:5000/v3
+      auth_url: https://chi.uc.chameleoncloud.org:5000
   uc_admin:
     cloud: chameleon
     region_name: CHI@UC
     auth:
-      auth_url: https://chi.uc.chameleoncloud.org:5000/v3
+      auth_url: https://chi.uc.chameleoncloud.org:5000
       project_name: openstack
   uc_dev:
     cloud: chameleon_dev
     region_name: CHI_DEV_UC
     auth:
-      auth_url: https://dev.uc.chameleoncloud.org:5000/v3
+      auth_url: https://dev.uc.chameleoncloud.org:5000
   uc_dev_admin:
     cloud: chameleon_dev
     region_name: CHI_DEV_UC
     auth:
-      auth_url: https://dev.uc.chameleoncloud.org:5000/v3
+      auth_url: https://dev.uc.chameleoncloud.org:5000
       project_name: openstack
 
   kvm:

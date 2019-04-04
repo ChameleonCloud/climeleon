@@ -17,7 +17,7 @@ node_config() {
     || (test -n "$default" && echo "$default")
 }
 
-update_node() {
+ensure_node_enrolled() {
   local node="$1"
 
   local ipmi_username="$(node_config "$node" "ipmi_username")"
@@ -28,7 +28,7 @@ update_node() {
 
   declare -a cmd_args=()
   cmd_args+=(--name "$node")
-  cmd_args+=(--driver pxe_ipmitool_socat)
+  cmd_args+=(--driver ipmi)
   cmd_args+=(--driver-info "ipmi_username=$ipmi_username")
   cmd_args+=(--driver-info "ipmi_password=$ipmi_password")
   cmd_args+=(--driver-info "ipmi_address=$ipmi_address")
@@ -48,7 +48,7 @@ update_node() {
     ||  openstack baremetal node create -f value -c uuid "${cmd_args[@]}"
 }
 
-create_node_port() {
+ensure_port_created() {
   local node="$1"
   local node_uuid="$2"
 
@@ -72,7 +72,7 @@ create_node_port() {
     && openstack baremetal port list --node "$node_uuid" -f value -c UUID)
 }
 
-create_blazar_host() {
+ensure_blazar_host_created() {
   local node="$1"
   local node_uuid="$2"
 
@@ -98,13 +98,13 @@ export OS_BAREMETAL_API_VERSION=1.29
 
 for node in $nodes; do
   log "Enrolling node $node..."
-  node_uuid="$(update_node "$node")"
+  node_uuid="$(ensure_node_enrolled "$node")"
 
   log -e "\tPutting node in maintenance mode..."
   openstack baremetal node maintenance set "$node_uuid"
 
   log -e "\tCreating network port..."
-  port_uuid="$(create_node_port "$node" "$node_uuid")"
+  port_uuid="$(ensure_port_created "$node" "$node_uuid")"
 
   log -e "\tEnabling SOL console redirection..."
   openstack baremetal node console enable "$node_uuid"
@@ -115,7 +115,7 @@ for node in $nodes; do
   openstack baremetal node provide "$node_uuid"
 
   log -e "\tMaking node reservable..."
-  create_blazar_host "$node" "$node_uuid"
+  ensure_blazar_host_created "$node" "$node_uuid"
 
   log -e "\tDone."
 done

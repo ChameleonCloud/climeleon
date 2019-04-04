@@ -23,7 +23,7 @@ WORKDIR /work
 VOLUME ["/mnt/cwd"]
 
 # Install dependencies for scripts
-RUN apk add --no-cache coreutils bash jq
+RUN apk add --no-cache bash coreutils curl jq
 
 COPY clouds2rc /usr/local/bin/
 COPY scripts ./scripts

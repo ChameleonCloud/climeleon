@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+if [[ "$OS_IDENTITY_API_VERSION" != "3" ]]; then
+  echo "OpenStack Identity API version 3 required."
+  echo "Current version is: $OS_IDENTITY_API_VERSION"
+  exit 1
+fi
+
+token="${1:-}"
+
+if [[ -z "$token" ]]; then
+  cat <<USAGE
+Usage: $(basename $0) TOKEN
+
+Validates the given TOKEN against OpenStack's Keystone service. Returns a JSON
+representation of the Keystone token.
+USAGE
+  exit 1
+fi
+
+curl -H "accept: application/json" \
+  -H "x-auth-token: $(openstack token issue -f value -c id)" \
+  -H "x-subject-token: $1" \
+  "$OS_AUTH_URL/v3/auth/tokens"

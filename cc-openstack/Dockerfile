@@ -1,21 +1,23 @@
-FROM python:2-alpine3.7 as base
+FROM python:2-alpine3.9 as base
 
 FROM base as builder
 
 RUN apk add --no-cache build-base curl git linux-headers libffi-dev openssl-dev python-dev
 
-RUN mkdir /install
+RUN mkdir -p /var/lib/cc/venv
+RUN pip install virtualenv && virtualenv /var/lib/cc/venv
+
 COPY requirements.txt /requirements.txt
 COPY requirements.forks.txt /requirements.forks.txt
 RUN curl -Sso /upper-constraints.txt https://raw.githubusercontent.com/openstack/requirements/stable/rocky/upper-constraints.txt \
-  && pip install --install-option="--prefix=/install" --no-build-isolation \
-    -r requirements.txt -c upper-constraints.txt \
-  && pip install --install-option="--prefix=/install" --no-build-isolation \
-    -r requirements.forks.txt
+  && source /var/lib/cc/venv/bin/activate \
+  && pip install --upgrade pip \
+  && pip install -r requirements.txt -c upper-constraints.txt \
+  && pip install -r requirements.forks.txt
 
 FROM base
 
-COPY --from=builder /install /usr/local
+COPY --from=builder /var/lib/cc/venv /var/lib/cc/venv
 
 # Install runtime libraries needed for crypto
 RUN apk add --no-cache libffi openssl

@@ -15,7 +15,7 @@ result_json="$(curl -G -SsL \
   --data-urlencode "q=$term" \
   "https://readthedocs.org/api/v2/docsearch/")"
 
-num_results="$(jq '.results[] | length' <<<"$result_json")"
+num_results="$(jq '.results | length' <<<"$result_json")"
 
 if [[ "$num_results" -gt 0 ]]; then
   extra=""

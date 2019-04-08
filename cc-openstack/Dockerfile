@@ -10,7 +10,8 @@ COPY requirements.forks.txt /requirements.forks.txt
 RUN curl -Sso /upper-constraints.txt https://raw.githubusercontent.com/openstack/requirements/stable/rocky/upper-constraints.txt \
   && pip install --install-option="--prefix=/install" --no-build-isolation \
     -r requirements.txt -c upper-constraints.txt \
-  && pip install --install-option="--prefix=/install" -r requirements.forks.txt
+  && pip install --install-option="--prefix=/install" --no-build-isolation \
+    -r requirements.forks.txt
 
 FROM base
 

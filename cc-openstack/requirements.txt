@@ -1,5 +1,6 @@
 crudini
 gnocchiclient
+osc-placement
 python-cinderclient
 python-glanceclient
 python-ironicclient

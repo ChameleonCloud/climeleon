@@ -31,12 +31,12 @@ $(1): $(STAMPS)/$(1).docker-$(VERSION)
 
 .PHONY: $(1)-publish
 $(1)-publish: $(1)
-	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
 	docker push $(IMAGE):$(VERSION)
 	docker push $(IMAGE):latest
 
 $(STAMPS)/$(1).docker-$(VERSION): $(STAMPS)
 	cd $(1) && docker build -t $(IMAGE):$(VERSION) .
+	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
 	touch $$@
 endef
 

@@ -75,7 +75,7 @@ docker_options+=(-e "OS_PASSWORD=$password")
 docker_options+=(-e "OS_CLOUD=$cloud")
 if [[ -z "${1:-}" ]]; then
   docker_options+=(--tty)
-  docker_options+=(-v "$PWD:/mnt/cwd")
+  docker_options+=(-v "$PWD:/host")
   cmd="bash"
 fi
 

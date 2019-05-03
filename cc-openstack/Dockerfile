@@ -28,17 +28,16 @@ COPY --from=builder /var/lib/cc/venv /var/lib/cc/venv
 # Install runtime libraries needed for crypto
 RUN apk add --no-cache libffi openssl
 
-RUN mkdir /work
-WORKDIR /work
 # Provide a volume-mount for a current working directory (of the host)
-VOLUME ["/mnt/cwd"]
+VOLUME ["/host"]
+WORKDIR /host
 
 # Install dependencies for scripts
 RUN apk add --no-cache bash coreutils curl jq
 
 COPY clouds2rc /usr/local/bin/
-COPY scripts ./scripts
-COPY clouds*.yaml ./
+COPY scripts/* /usr/local/bin/
+COPY clouds*.yaml /etc/openstack/
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

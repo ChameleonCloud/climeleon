@@ -38,7 +38,6 @@ case "${1:-}" in
 esac
 
 cloud="${1:-}"
-shift
 
 [[ -n "$cloud" ]] || {
   cat <<USAGE
@@ -79,4 +78,5 @@ if [[ -z "${1:-}" ]]; then
   cmd="bash"
 fi
 
+shift # Past 'cloud' positional arg
 exec docker run "${docker_options[@]}" "$registry/cc-openstack" "${cmd:-$@}"

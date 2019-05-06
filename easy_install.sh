@@ -18,7 +18,7 @@ echo
 
 pushd "$tmp_dir" >/dev/null
 curl -u "$username:$password" -sL "$repo/archive/$version.tar.gz" \
-  | tar -x --strip-components=1 \
+  | tar -xz --strip-components=1 \
   || {
     echo "Error pulling repository from GitHub. Make sure your username and"
     echo "password are correct, and that you have access to the repo!"

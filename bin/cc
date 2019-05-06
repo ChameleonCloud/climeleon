@@ -38,7 +38,6 @@ case "${1:-}" in
 esac
 
 cloud="${1:-}"
-
 [[ -n "$cloud" ]] || {
   cat <<USAGE
 Usage: $0 <cloud> <command>
@@ -48,6 +47,7 @@ communication with a specific OpenStack cloud named <cloud>.
 USAGE
   exit 1
 }
+shift # Past 'cloud' positional arg
 
 password=""
 if ! command -v chameleon_password >/dev/null; then
@@ -78,5 +78,4 @@ if [[ -z "${1:-}" ]]; then
   cmd="bash"
 fi
 
-shift # Past 'cloud' positional arg
 exec docker run "${docker_options[@]}" "$registry/cc-openstack" "${cmd:-$@}"

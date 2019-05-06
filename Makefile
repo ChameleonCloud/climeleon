@@ -4,7 +4,10 @@ DOCKER_REGISTRY ?= docker.chameleoncloud.org
 CONTAINERS := cc-docs cc-openstack cc-rpm
 
 .PHONY: all
-all: install $(CONTAINERS)
+all: build install
+
+.PHONY: build
+build: $(CONTAINERS)
 
 .PHONY: publish
 publish: $(CONTAINERS:%=%-publish)

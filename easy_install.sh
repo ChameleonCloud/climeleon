@@ -11,9 +11,9 @@ cleanup() {
 trap cleanup EXIT
 
 printf "GitHub username: "
-read username
+read username </dev/tty
 printf "GitHub password (OR Access Token if you're using 2FA): "
-read -s password
+read -s password </dev/tty
 echo
 
 pushd "$tmp_dir" >/dev/null

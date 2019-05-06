@@ -1,6 +1,5 @@
 CC_INSTALL_PATH ?= /usr/local/bin
-
-REGISTRY := docker.chameleoncloud.org
+DOCKER_REGISTRY ?= docker.chameleoncloud.org
 
 CONTAINERS := cc-docs cc-openstack cc-rpm
 
@@ -24,7 +23,7 @@ $(STAMPS):
 
 define container_rule
 $(eval VERSION := $(shell git log -n1 --format=%h -- $(1)))
-$(eval IMAGE := $(REGISTRY)/$(1))
+$(eval IMAGE := $(DOCKER_REGISTRY)/$(1))
 
 $(1): $(STAMPS)/$(1).docker-$(VERSION)
 	touch $$@

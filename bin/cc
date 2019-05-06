@@ -51,18 +51,21 @@ shift # Past 'cloud' positional arg
 
 password=""
 if ! command -v chameleon_password >/dev/null; then
-  echo "Could not find your Chameleon password!"
-  echo "Please ensure there is a chameleon_password() function"
-  echo "(which prints your Chameleon Cloud password) available"
-  echo "from your current shell and sub-shells."
-  echo ""
-  echo "For example:"
-  echo ""
-  echo "  chameleon_password() {"
-  echo "    echo \"password\""
-  echo "  }"
-  echo "  # export for use in sub-shells"
-  echo "  export -f chameleon_password"
+  cat <<NOPASSWD
+Could not find your Chameleon password!"
+Please ensure there is a chameleon_password() function
+(which prints your Chameleon Cloud password) available
+from your current shell and sub-shells.
+
+For example:
+
+  chameleon_password() {
+    echo \"password\"
+  }
+  # export for use in sub-shells
+  export -f chameleon_password
+
+NOPASSWD
   exit 1
 else
   password="$(chameleon_password)"
@@ -72,9 +75,9 @@ docker_options=(--rm --interactive)
 docker_options+=(-e "OS_USERNAME=$CHAMELEON_USER")
 docker_options+=(-e "OS_PASSWORD=$password")
 docker_options+=(-e "OS_CLOUD=$cloud")
+docker_options+=(-v "$PWD:/host")
 if [[ -z "${1:-}" ]]; then
   docker_options+=(--tty)
-  docker_options+=(-v "$PWD:/host")
   cmd="bash"
 fi
 

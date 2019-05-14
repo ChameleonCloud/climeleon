@@ -4,7 +4,7 @@ set -e -u -o pipefail
 
 resource_class=CUSTOM_BAREMETAL
 
-if [[ $# == 0 ]]; do
+if [[ $# == 0 ]]; then
   nodes=$(openstack baremetal node list -f value -c UUID)
 else
   nodes=$@

@@ -33,6 +33,14 @@ case "${1:-}" in
     exec "$DIR/cc-replacekey" "$@"
     exit $?
     ;;
+  update)
+    for image in cc-docs cc-openstack cc-rpm; do
+      printf "Updating $image command... "
+      docker pull "$registry/$image" >/dev/null || break
+      printf "($(docker inspect "$registry/$image" -f 'created={{.Created}}'))\n"
+    done
+    exit $?
+    ;;
   *)
     ;;
 esac

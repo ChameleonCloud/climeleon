@@ -4,7 +4,13 @@ set -e -u -o pipefail
 
 resource_class=CUSTOM_BAREMETAL
 
-for node in $@; do
+if [[ $# == 0 ]]; do
+  nodes=$(openstack baremetal node list -f value -c UUID)
+else
+  nodes=$@
+fi
+
+for node in $nodes; do
   provider_uuid=$(openstack resource provider list --name=$node -f value -c uuid)
   reserved_count=$(openstack resource provider inventory show $provider_uuid $resource_class -f json \
     | jq -r '.reserved')

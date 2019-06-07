@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+host="$1"
+
+mysql <<SQL
+select l.*
+from nova_api.aggregate_hosts ah
+join nova_api.aggregate_metadata am on ah.aggregate_id=am.aggregate_id
+join blazar.reservations r on r.id=replace(am.value,'blazar_','')
+join blazar.leases l on l.id=r.lease_id
+where
+ah.host='$host' and
+am.\`key\`='availability_zone'\\G
+SQL

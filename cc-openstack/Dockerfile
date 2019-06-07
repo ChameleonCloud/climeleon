@@ -1,4 +1,4 @@
-FROM python:3-alpine3.9 as base
+FROM python:2-alpine3.9 as base
 
 # Builder (helper) image
 # This image is used to install pip packages, which are then simply copied

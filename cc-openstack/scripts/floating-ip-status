@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+openstack floating ip list -f json \
+  | jq -r 'map(select(.["Port"] != null)) | map(.["Floating IP Address"])[]' \
+  | xargs -L1 -I% sh -c 'nc -zw1 % 22 || echo % not reachable'

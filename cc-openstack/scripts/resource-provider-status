@@ -2,21 +2,20 @@
 # Checks the status of a Placement resource provider for Ironic nodes.
 set -e -u -o pipefail
 
-resource_class=CUSTOM_BAREMETAL
+all_providers=$(openstack resource provider list -f json)
 
-if [[ $# == 0 ]]; then
-  nodes=$(openstack baremetal node list -f value -c UUID)
-else
-  nodes=$@
-fi
+provider_by_name() {
+  local name="$1"
+  jq -r "map(select(.name == \"$name\"))[0].uuid" <<<"$all_providers"
+}
 
-for node in $nodes; do
-  provider_uuid=$(openstack resource provider list --name=$node -f value -c uuid)
-  reserved_count=$(openstack resource provider inventory show $provider_uuid $resource_class -f json \
-    | jq -r '.reserved')
-  used_count=$(openstack resource provider usage show $provider_uuid -f json \
-    | jq -r "map(select(.resource_class==\"$resource_class\"))[].usage")
-  if [[ $reserved_count != $used_count ]]; then
-    echo "$node has bad resource provider state: reserved=$reserved_count, used=$used_count"
+all_nodes=$(openstack baremetal node list -c "UUID" -c "Provisioning State" -f json)
+available_node_uuids=$(jq -r 'map(select(.["Provisioning State"] == "available"))[].UUID' <<<"$all_nodes")
+
+for node in $available_node_uuids; do
+  in_use=$(openstack resource provider usage show "$(provider_by_name $node)" -f json \
+    | jq 'map(select(.resource_class == "CUSTOM_BAREMETAL"))[0].usage') || break
+  if [[ $in_use -gt 0 ]]; then
+    echo "ERROR: node $node available, but marked as used"
   fi
 done

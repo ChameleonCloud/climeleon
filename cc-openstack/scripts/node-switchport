@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+declare -a NODES=()
+HEADER=1
+
+for i in "$@"; do
+case $i in
+  --no-header)
+    HEADER=0
+    shift
+    ;;
+  -h|--help)
+    cat <<USAGE
+Usage: $(basename $0) [-n|--no-header] NODE [..]
+
+Looks up physical switch port information for given NODE identifies. Multiple
+NODE identifiers can be specified to retrieve information about multiple nodes.
+
+Options:
+  -n|--no-header: Don't display the header row
+
+Examples:
+  # Display information about c16 and c17
+  $(basename $0) c16 c17
+
+  # Display information about node with UUID
+  $(basename $0) d74f4c82-180f-48bd-b193-307391e80f6e
+USAGE
+    exit 1
+    ;;
+  *)
+    NODES+=($i)
+    shift
+    ;;
+esac
+done
+
+port_summary() {
+  jq -r '.address + "\t" + .local_link_connection.switch_info + "\t" + .local_link_connection.port_id'
+}
+
+echo -e "node\tmac_address\tswitch_name\tswitch_port"
+for node in ${NODES[@]}; do
+  ports=$(openstack baremetal port list --node "$node" -f value -c UUID)
+  for port in $ports; do
+    portJson=$(openstack baremetal port show "$port" -f json)
+    echo -e "$node\t$(port_summary <<<"$portJson")"
+  done
+done

@@ -33,7 +33,7 @@ VOLUME ["/host"]
 WORKDIR /host
 
 # Install dependencies for scripts
-RUN apk add --no-cache bash coreutils curl jq
+RUN apk add --no-cache bash coreutils curl jq parallel util-linux
 
 COPY clouds2rc /usr/local/bin/
 COPY scripts/* /usr/local/bin/

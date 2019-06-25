@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
-openstack floating ip list -f json \
-  | jq -r 'map(select(.["Port"] != null)) | map(.["Floating IP Address"])[]' \
-  | xargs -n1 -I% -P10 sh -c 'nc -zw1 % 22 || echo % not reachable'
+floating_ips=$(openstack floating ip list -f json \
+  | jq -r 'map(select(.["Port"] != null)) | map(.["Floating IP Address"])[]')
+
+unreachable=$(xargs -n1 -I% -P10 sh -c 'nc -zw1 % 22 || echo % not reachable' <<<"$floating_ips")
+
+total_cnt=$(wc -l <<<"$floating_ips")
+unreachable_cnt=$(wc -l <<<"$unreachable")
+
+(
+  echo "Total: $total_cnt"
+  echo "Unreachable: $unreachable_cnt"
+  echo "Pct: $(echo "scale=2; $total_cnt/$unreachable_cnt" | bc)%"
+  echo "Summary:"
+  echo
+) | column -t
+
+echo "$unreachable"

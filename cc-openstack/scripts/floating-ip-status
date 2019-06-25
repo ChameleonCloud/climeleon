@@ -11,7 +11,7 @@ unreachable_cnt=$(wc -l <<<"$unreachable")
 (
   echo "Total: $total_cnt"
   echo "Unreachable: $unreachable_cnt"
-  echo "Pct: $(echo "scale=2; $total_cnt/$unreachable_cnt" | bc)%"
+  echo "Pct: $(echo "scale=2; x=$unreachable_cnt/$total_cnt; x*100" | bc)%"
   echo "Summary:"
   echo
 ) | column -t

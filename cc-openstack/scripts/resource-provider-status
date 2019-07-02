@@ -9,13 +9,23 @@ provider_by_name() {
   jq -r "map(select(.name == \"$name\"))[0].uuid" <<<"$all_providers"
 }
 
-all_nodes=$(openstack baremetal node list -c "UUID" -c "Provisioning State" -f json)
-available_node_uuids=$(jq -r 'map(select(.["Provisioning State"] == "available"))[].UUID' <<<"$all_nodes")
+all_nodes=$(openstack baremetal node list -f json)
+available_node_uuids=$(jq -r 'map(select(
+  .["Provisioning State"] == "available" and
+  .["Maintenance"] == false
+))[].UUID' <<<"$all_nodes")
 
 for node in $available_node_uuids; do
-  in_use=$(openstack resource provider usage show "$(provider_by_name $node)" -f json \
-    | jq 'map(select(.resource_class == "CUSTOM_BAREMETAL"))[0].usage') || break
+  provider="$(provider_by_name $node)"
+  in_use=$(openstack resource provider usage show "$provider" -f json \
+    | jq -r 'map(select(.resource_class == "CUSTOM_BAREMETAL"))[0].usage') || break
+  reserved=$(openstack resource provider inventory show "$provider" CUSTOM_BAREMETAL -f json \
+    | jq -r '.reserved') || break
   if [[ $in_use -gt 0 ]]; then
-    echo "ERROR: node $node available, but marked as used"
+    echo "ERROR ($node): allocations exist"
+    # delete allocations(?)
+  elif [[ $reserved -gt 0 ]]; then
+    echo "ERROR ($node): inventory already reserved"
+    echo "  suggestion: openstack resource provider inventory set --resource CUSTOM_BAREMETAL:reserved=0 $provider"
   fi
 done

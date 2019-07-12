@@ -21,6 +21,9 @@ Host *.tacc.utexas.edu *.tacc.chameleoncloud.org
 Host *.uc.chameleoncloud.org
   User $UC_USER
   ProxyJump $ANL_USER@$anl_jump_host
+
+Host *.northwestern.edu
+  User $NU_USER
 SSH_CONFIG
 
 cleanup() {

@@ -39,5 +39,18 @@ clouds:
       auth_url: https://dev.uc.chameleoncloud.org:5000
       project_id: e8ae724d28374d0fa15a0e16674b5c47
 
+  nu:
+    cloud: chameleon
+    region_name: RegionOne
+    auth:
+      auth_url: https://sl-ciab.northwestern.edu:5000
+      project_id: e16bc9edea3140eebde6697474b8b38c
+  nu_admin:
+    cloud: chameleon
+    region_name: RegionOne
+    auth:
+      auth_url: https://sl-ciab.northwestern.edu:5000
+      project_id: 159273bda54e4019af55119850ec87dd
+
   kvm:
     cloud: chameleon_kvm

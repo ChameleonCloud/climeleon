@@ -113,7 +113,9 @@ for node in $nodes; do
   openstack baremetal node maintenance unset "$node_uuid"
   openstack baremetal node manage "$node_uuid"
   openstack baremetal node provide "$node_uuid"
+  openstack baremetal node set --resource-class baremetal "$node_uuid"
 
+  # TODO: restart nova-compute-ironic to update hypervisors
   log -e "\tMaking node reservable..."
   ensure_blazar_host_created "$node" "$node_uuid"
 

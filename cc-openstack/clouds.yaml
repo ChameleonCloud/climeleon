@@ -41,13 +41,13 @@ clouds:
 
   nu:
     cloud: chameleon
-    region_name: RegionOne
+    region_name: CHI@NU
     auth:
       auth_url: https://sl-ciab.northwestern.edu:5000
       project_id: e16bc9edea3140eebde6697474b8b38c
   nu_admin:
     cloud: chameleon
-    region_name: RegionOne
+    region_name: CHI@NU
     auth:
       auth_url: https://sl-ciab.northwestern.edu:5000
       project_id: 159273bda54e4019af55119850ec87dd

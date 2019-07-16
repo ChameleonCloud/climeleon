@@ -15,7 +15,7 @@ This provides a new tool called `cc` that can make some operational tasks easier
 You can build the Docker container(s) necessary and install some symlinks to /usr/local/bin (configurable with CC_INSTALL_PATH env variable) by running the default `make` task.
 
 ```
-$> make
+make
 ```
 
 ### Credentials
@@ -53,22 +53,13 @@ In order to log in to the various nodes, sometimes it's necessary to log in as v
 
 ## Commands
 
-### `docs`
-
-This is a little convenience tool that currently just searches the (public) Chameleon docs for a term and shows you which pages matched. Just saves a browser window trip.
-
-```
-# Find doc pages referencing baremetal nodes
-$> cc docs search "baremetal"
-```
-
 ### `replacekey`
 
 This is a convenience utility for updating your SSH public key on all authentication servers. It works by simply taking you through a tour of all the login servers we use and then updating your `~/.ssh/authorized_keys` to contain a key you provide to the script. If it's your first time doing this, you will have to enter your password several times, as no key exists on the server for you yet and you'll have to fall back to password authentication.
 
 ```
 # Note: this will replace all your existing public keys on the servers with the key you provide!
-$> cc replacekey "/path/to/public/key"
+cc replacekey "/path/to/public/key"
 ```
 
 ### `rpm (build|gen-patches)`
@@ -78,16 +69,16 @@ This is an RPM workflow utility for packaging up a forked OpenStack project. The
 ```
 # 1. Generate patches (replace '10.0.1' with whatever upstream
 #    OpenStack version you're working against for this project)
-$> cd path/to/openstack/project; cc rpm gen-patches '10.0.1'
+cd path/to/openstack/project; cc rpm gen-patches '10.0.1'
 
 # 2. Copy patches to accompanying distgit repo
-$> cp *.patch ../project-distgit/
+cp *.patch ../project-distgit/
 
 # 3. Update spec file
-$> cd ../project-distgit; vi project.spec
+cd ../project-distgit; vi project.spec
 
 # 4. Generate RPM
-$> cc rpm build
+cc rpm build
 ```
 
 ### `ssh`/`scp`
@@ -96,17 +87,17 @@ This is a wrapper for SSH/SCP that handles authentication and the proxying of co
 
 ```
 # Log in to a TACC node
-$> cc ssh chameleon01.tacc.utexas.edu
+cc ssh chameleon01.tacc.utexas.edu
 
 # Log in to a UC node
-$> cc ssh admin01.uc.chameleoncloud.org
+cc ssh admin01.uc.chameleoncloud.org
 
 # Log in to an internal-only node
 # (Notice the use of -t to allocate a pseudo-tty)
-$> cc ssh -t master2.chameleon.tacc.utexas.edu sudo ssh m01-03
+cc ssh -t master2.chameleon.tacc.utexas.edu sudo ssh m01-03
 
 # Also works with SCP
-$> cc scp my-script.sh admin01.uc.chameleoncloud.org:
+cc scp my-script.sh admin01.uc.chameleoncloud.org:
 ```
 
 ### `openstack` (and legacy OpenStack clients)
@@ -117,14 +108,14 @@ The default behavior of `cc` is to select a cloud configuration for you and then
 
 ```
 # Run an `openstack` command against CHI@TACC
-$> cc tacc openstack project list
+cc tacc openstack project list
 
 # Run a `blazar` command against CHI@UC
-$> cc uc blazar host-list
+cc uc blazar host-list
 ```
 
 You can also spawn an interactive shell that has access to all of these commands:
 
 ```
-$> cc uc
+cc uc
 ```

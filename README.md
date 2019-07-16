@@ -98,6 +98,9 @@ cc ssh -t master2.chameleon.tacc.utexas.edu sudo ssh m01-03
 
 # Also works with SCP
 cc scp my-script.sh admin01.uc.chameleoncloud.org:
+
+# Copy file between two sites (use -3 flag)
+cc scp -3 admin01.uc.chameleoncloud.org:my-script.sh master2.chameleon.tacc.utexas.edu:
 ```
 
 ### `openstack` (and legacy OpenStack clients)

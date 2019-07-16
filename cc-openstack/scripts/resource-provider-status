@@ -22,10 +22,22 @@ for node in $available_node_uuids; do
   reserved=$(openstack resource provider inventory show "$provider" CUSTOM_BAREMETAL -f json \
     | jq -r '.reserved') || break
   if [[ $in_use -gt 0 ]]; then
+    allocation=$(openstack resource provider show --allocations "$provider" -f json \
+     | jq -r '.allocations | keys[]')
     echo "ERROR ($node): allocations exist"
+    echo "  This indicates that for some reason an allocation was made"
+    echo "  against the resource provider, but was not cleaned up."
+    echo "  Suggestion: delete the allocation."
+    echo
+    echo "  openstack resource provider allocation delete $allocation"
+    echo
     # delete allocations(?)
   elif [[ $reserved -gt 0 ]]; then
     echo "ERROR ($node): inventory already reserved"
-    echo "  suggestion: openstack resource provider inventory set --resource CUSTOM_BAREMETAL:reserved=0 $provider"
+    echo "  This indicates that for some reason there is a reservation for the"
+    echo "  resource provider's inventory. Suggestion: reset the inventory."
+    echo
+    echo "  openstack resource provider inventory set --resource CUSTOM_BAREMETAL:reserved=0 $provider"
+    echo
   fi
 done

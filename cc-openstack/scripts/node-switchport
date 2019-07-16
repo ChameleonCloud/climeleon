@@ -39,11 +39,14 @@ port_summary() {
   jq -r '.address + "\t" + .local_link_connection.switch_info + "\t" + .local_link_connection.port_id'
 }
 
-echo -e "node\tmac_address\tswitch_name\tswitch_port"
-for node in ${NODES[@]}; do
-  ports=$(openstack baremetal port list --node "$node" -f value -c UUID)
-  for port in $ports; do
-    portJson=$(openstack baremetal port show "$port" -f json)
-    echo -e "$node\t$(port_summary <<<"$portJson")"
+tab=$(echo -ne "\t")
+{
+  echo -e "node\tmac_address\tswitch_name\tswitch_port"
+  for node in ${NODES[@]}; do
+    ports=$(openstack baremetal port list --node "$node" -f value -c UUID)
+    for port in $ports; do
+      portJson=$(openstack baremetal port show "$port" -f json)
+      echo -e "$node\t$(port_summary <<<"$portJson")"
+    done
   done
-done
+} | column -t -s"$tab"

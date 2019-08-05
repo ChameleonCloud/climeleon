@@ -31,7 +31,6 @@ for node in $available_node_uuids; do
     echo
     echo "  openstack resource provider allocation delete $allocation"
     echo
-    # delete allocations(?)
   elif [[ $reserved -gt 0 ]]; then
     echo "ERROR ($node): inventory already reserved"
     echo "  This indicates that for some reason there is a reservation for the"

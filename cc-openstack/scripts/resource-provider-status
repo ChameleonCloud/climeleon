@@ -37,7 +37,9 @@ for node in $available_node_uuids; do
     echo "  This indicates that for some reason there is a reservation for the"
     echo "  resource provider's inventory. Suggestion: reset the inventory."
     echo
-    echo "  openstack resource provider inventory set --resource CUSTOM_BAREMETAL:reserved=0 $provider"
+    echo "  openstack resource provider inventory set $provider \\"
+    echo "    --resource CUSTOM_BAREMETAL:total=1 --resource CUSTOM_BAREMETAL:max_unit=1 \\"
+    echo "    --resource CUSTOM_BAREMETAL:reserved=0"
     echo
   fi
 done

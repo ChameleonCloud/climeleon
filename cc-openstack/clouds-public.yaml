@@ -18,7 +18,6 @@ public-clouds:
     identity_api_version: '3'
     auth:
       auth_url: https://openstack.tacc.chameleoncloud.org:5000
-      project_name: openstack
-      project_domain_name: Default
+      project_id: Chameleon
       user_domain_name: Default
     region_name: RegionOne

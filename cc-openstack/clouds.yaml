@@ -54,3 +54,9 @@ clouds:
 
   kvm:
     cloud: chameleon_kvm
+
+  kvm_admin:
+    cloud: chameleon_kvm
+    auth:
+      project_id: admin
+

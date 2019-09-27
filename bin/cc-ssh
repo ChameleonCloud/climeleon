@@ -13,18 +13,18 @@ ssh="ssh -F $config"
 cat >"$config" <<SSH_CONFIG
 Host *.chameleon.tacc.utexas.edu chameleon06.tacc.utexas.edu dev.tacc.chameleoncloud.org
   User $TACC_USER
-  ProxyJump $TACC_USER@$tacc_jump_host
+  ProxyCommand ssh -qW %h:%p $TACC_USER@$tacc_jump_host
 
 Host *.tacc.utexas.edu *.tacc.chameleoncloud.org
   User $TACC_USER
 
 Host *.uc.chameleoncloud.org
   User $UC_USER
-  ProxyJump $ANL_USER@$anl_jump_host
+  ProxyCommand ssh -qW %h:%p $ANL_USER@$anl_jump_host
 
 Host *.mcs.anl.gov !$anl_jump_host
   User $ANL_USER
-  ProxyJump $ANL_USER@$anl_jump_host
+  ProxyCommand ssh -qW %h:%p $ANL_USER@$anl_jump_host
 
 Host *.northwestern.edu
   User $NU_USER

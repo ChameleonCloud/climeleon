@@ -34,11 +34,11 @@ case "${1:-}" in
     if [[ -z "$query" ]]; then
       usage
     fi
-    cmd+=(bash -c "'vault-traverse secret/passwords | grep $query'")
+    cmd+=(bash -c "'vault-traverse secret/passwords | grep -i $query'")
     ;;
   *)
     usage
     ;;
 esac
 
-"$DIR/cc-ssh" ssh -t nimbusproject.mcs.anl.gov "${cmd[@]}"
+"$DIR/cc-ssh" ssh -qt nimbusproject.mcs.anl.gov "${cmd[@]}"

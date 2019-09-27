@@ -37,6 +37,11 @@ case "${1:-}" in
     done
     exit $?
     ;;
+  vault)
+    shift # past command
+    exec "$DIR/cc-vault" "$@"
+    exit $?
+    ;;
   *)
     ;;
 esac

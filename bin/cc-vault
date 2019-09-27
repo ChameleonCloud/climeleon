@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+usage() {
+  cat <<USAGE
+Usage: $0 <command>
+
+Commands:
+  search <term>: Search for a key matching some search string
+  login: Log in to the Vault (uses MCS password)
+
+Additionally, the following commands are pass-throughs to the Vault CLI:
+
+  list <path>: Lists all keys nested directly under the search path
+  read <path>: Read the value of a key at a given path
+  write <path> value=<value>: Write a new value to a key at a given path
+USAGE
+  exit 1
+}
+
+declare -a cmd=()
+case "${1:-}" in
+  login)
+    cmd+=(bash -ic vault_login)
+    ;;
+  list|read|write)
+    cmd+=(vault "$@")
+    ;;
+  search)
+    shift
+    query="${1:-}"
+    if [[ -z "$query" ]]; then
+      usage
+    fi
+    cmd+=(bash -c "'vault-traverse secret/passwords | grep $query'")
+    ;;
+  *)
+    usage
+    ;;
+esac
+
+"$DIR/cc-ssh" ssh -t nimbusproject.mcs.anl.gov "${cmd[@]}"

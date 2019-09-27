@@ -122,3 +122,21 @@ You can also spawn an interactive shell that has access to all of these commands
 ```
 cc uc
 ```
+
+### `vault`
+
+This is a helper to interface with the Nimbus team vault hosted in MCS.
+
+```
+# Log in to the Vault (logins should persist for a bit)
+cc vault login
+
+# Search for a particular password, in this case "zenodo"
+cc vault search zenodo
+
+# Read a password
+cc vault read <path>
+
+# Update a password
+cc vault write <path> value=<value>
+```

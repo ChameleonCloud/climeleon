@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# Prints the bare metal node UUIDs reserved under a given lease.
+#
+set -e -u -o pipefail
+
+lease="${1:-}"
+
+if [[ "$lease" == "-h" || "$lease" == "--help" ]]; then
+  cat <<USAGE
+Usage: lease-nodes [lease_uuid]
+
+Prints the Ironic bare metal node UUIDs reserved under the given lease, if any.
+USAGE
+fi
+
+hosts=$(blazar host-list -f json \
+  | jq 'map({"key": .id, "value": .hypervisor_hostname}) | from_entries')
+
+out=$(
+  if [[ -n "$lease" ]]; then
+    blazar host-allocation-list -f json \
+      | jq -r --argjson hosts "$hosts" \
+        "map(select(.reservations[]|select(.lease_id == \"$lease\"))) | map(\"$lease\t\" + \$hosts[.resource_id])[]"
+  else
+    blazar host-allocation-list -f json \
+      | jq -r --argjson hosts "$hosts" \
+        'map(select(.reservations[].lease_id)) | map(. as $parent | .reservations[].lease_id + "\t" + $hosts[$parent.resource_id])[]'
+  fi
+)
+
+echo -e "lease_id\thost_id\n$(sort <<<"$out")" | column -t

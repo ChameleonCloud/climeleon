@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+nodes=$(openstack baremetal node list --associated --long --format json \
+  | jq -r 'map(select(.["Console Enabled"] == false))[].Name')
+
+if [[ -n "$nodes" ]]; then
+  echo "The following nodes do not have functional serial consoles:"
+  echo -e "$(sed 's/^/\t/' <<<"$nodes")"
+else
+  echo "All active nodes have functioning serial consoles."
+fi

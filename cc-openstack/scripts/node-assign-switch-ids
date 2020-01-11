@@ -1,0 +1,138 @@
+#!/usr/bin/env python
+"""
+node-assign-switch-ids
+
+Intended as a migration script for https://collab.tacc.utexas.edu/issues/17386, but could
+be useful later. Exists mostly as documentation and perhaps example code that can be re-used.
+"""
+import argparse
+import operator
+import sys
+
+from keystoneauth1 import adapter, loading, session
+from keystoneauth1.identity import v3
+from ironicclient import client
+
+import logging
+logging.basicConfig(level=logging.INFO)
+LOG = logging.getLogger(__name__)
+
+IRONIC_CLIENT_VERSION = 1
+
+
+def dell_port_strategy(port_id):
+    """
+    Handles ports like Te 1/1/1, Te 1/2/3
+    Assumes there are 4 ports per X/X prefix, e.g. 1/2/1, 1/2/2, 1/2/3, 1/2/4.. 1/3/1
+    Thus, simply uses the middle digit as a 4x multiplier.
+    """
+    parts = [int(p) for p in port_id.replace("Te 1/", "").split("/")]
+    return (4 * (parts[0] - 1)) + parts[1]
+
+
+def corsa_port_strategy(port_id):
+    """
+    Handles ports like P 1, P 2
+    """
+    return int(port_id.replace("P ", ""))
+
+
+REGION_SWITCHES = {
+    "CHI@UC": {
+        "Chameleon-Compute": {
+            "strategy": dell_port_strategy,
+            "start_port_id": 301
+        },
+        "Chameleon-Cloud": {
+            "strategy": dell_port_strategy,
+            # 413 = 301 + (28*4), assuming 4 breakout links on each of 28 ports.
+            # In practice many of the ports are not supporting breakout cables.
+            "start_port_id": 413  
+        },
+        "chameleon-corsa1": {
+            "strategy": corsa_port_strategy,
+            "start_port_id": 101
+        },
+        "chameleon-corsa2": {
+            "strategy": corsa_port_strategy,
+            # 133 = 101 + 32, assuming 32 ports on each switch
+            "start_port_id": 133
+        }
+    }
+}
+
+
+def main(argv):
+    parser = argparse.ArgumentParser(
+        description='Set switch IDs for Ironic node ports')
+    loading.cli.register_argparse_arguments(parser, argv, default='password')
+    loading.session.register_argparse_arguments(parser)
+    loading.adapter.register_argparse_arguments(parser)
+
+    args = parser.parse_args()
+
+    auth = loading.cli.load_from_argparse_arguments(args)
+    session = loading.session.load_from_argparse_arguments(args, auth=auth)
+    # Wrap session in adapter that sets interface/region
+    session = adapter.Adapter(
+        session=session, interface=args.os_interface, region_name=args.os_region_name)
+    # Also have to pass region in here because Ironic client is a pain
+    ironic = client.get_client(
+        IRONIC_CLIENT_VERSION, 
+        session=session,
+        region_name=args.os_region_name,
+        # Ironic client defaults to 1.9 currently, "latest" will be latest the API supports
+        os_ironic_api_version='latest'
+    )
+
+    ports_for_update = []
+
+    for port in ironic.port.list(detail=True):
+        switch_info = port.local_link_connection["switch_info"]
+        port_id = port.local_link_connection["port_id"]
+
+        switch_conf = (
+            REGION_SWITCHES.get(args.os_region_name, {})
+                           .get(switch_info)
+        )
+
+        if not switch_conf:
+            LOG.error("unrecognized link information on {}".format(port.uuid))
+            continue
+
+        # Remove 1 because port numberings on switch are not 0-indexed
+        switch_id = (switch_conf["start_port_id"] + switch_conf["strategy"](port_id) - 1)
+
+        ports_for_update.append(dict(
+            uuid=port.uuid, node_uuid=port.node_uuid,
+            switch_id=switch_id, switch_info=switch_info, port_id=port_id
+        ))
+
+    for p in sorted(ports_for_update, key=lambda p: (p["switch_info"] + str(p["switch_id"]))):
+        node_uuid = p["node_uuid"]
+        port_uuid = p["uuid"]
+        padded_switch_id = str(p["switch_id"]).zfill(16)
+
+        patch = [
+            dict(
+                path="/local_link_connection/switch_id", 
+                value=padded_switch_id, 
+                op="replace"
+            )
+        ]
+
+        try:
+            ironic.node.set_maintenance(node_uuid, True, 
+                maint_reason="node-assign-switch-ids: updating local_link_connection")
+            ironic.port.update(port_uuid, patch)
+            ironic.node.set_maintenance(node_uuid, False)
+            LOG.info("Port {} ({}:{}) updated to switch_id={}".format(
+                port_uuid, p["switch_info"], p["port_id"], padded_switch_id))
+        except:
+            LOG.exception("failed to update port {}".format(p["uuid"]))
+
+
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))

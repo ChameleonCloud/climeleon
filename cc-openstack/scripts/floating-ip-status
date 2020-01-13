@@ -3,7 +3,7 @@
 floating_ips=$(openstack floating ip list -f json \
   | jq -r 'map(select(.["Port"] != null)) | map(.["Floating IP Address"])[]')
 
-unreachable=$(xargs -n1 -I% -P10 sh -c 'nc -zw1 % 22 || echo % not reachable' <<<"$floating_ips")
+unreachable=$(xargs -n1 -I% -P10 sh -c 'ping -not1 % >/dev/null || echo % not reachable' <<<"$floating_ips")
 
 total_cnt=$(wc -l <<<"$floating_ips")
 unreachable_cnt=$(wc -l <<<"$unreachable")

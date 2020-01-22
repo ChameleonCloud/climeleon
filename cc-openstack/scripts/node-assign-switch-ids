@@ -25,13 +25,22 @@ def uc_assignment_strategy(node, port):
     # Names are like c01, nc24.
     # Strip prefix and cast as integer.
     if node.name.startswith('nc'):
-        start_id = 100
+        link = port.local_link_connection
+        switch_info = link["switch_info"]
+        if switch_info == "chameleon-corsa1":
+            start_id = 100
+        elif switch_info == "chameleon-corsa2":
+            start_id = 132
+        else:
+            raise ValueError((
+                "Cannot figure out new port ID for node {}: unknown switch {}"
+                .format(node.uuid, switch_info)
+            ))
+        return start_id + int(re.sub(r'^P ', '', link["port_id"]))
     elif node.name.startswith('c'):
-        start_id = 200
+        return 200 + int(re.sub(r'^[a-z]+', '', node.name))
     else:
         raise ValueError("Cannot figure out new port ID for node {}".format(node.uuid))
-
-    return start_id + int(re.sub(r'^[a-z]+', '', node.name))
 
 
 REGION_STRATEGIES = {
@@ -87,18 +96,20 @@ def main(argv):
             LOG.exception("Failed to assign switch_id for node")
             continue
 
-        ports_for_update.append(dict(
-            node=node, uuid=port.uuid,
-            switch_id=switch_id, switch_info=switch_info, port_id=port_id
-        ))
+        if int(port.local_link_connection["switch_id"]) != switch_id:
+            ports_for_update.append(dict(
+                node=node, uuid=port.uuid,
+                switch_id=switch_id, switch_info=switch_info, port_id=port_id
+            ))
 
         # Ensure other secondary ports have switch_id unset
         for p in ports[1:]:
             link = p.local_link_connection
-            ports_for_update.append(dict(
-                node=node, uuid=p.uuid,
-                switch_id=0, switch_info=link["switch_info"], port_id=link["port_id"]
-            ))
+            if int(link["switch_id"]) != 0:
+                ports_for_update.append(dict(
+                    node=node, uuid=p.uuid,
+                    switch_id=0, switch_info=link["switch_info"], port_id=link["port_id"]
+                ))
 
     for p in sorted(ports_for_update, key=lambda p: p["node"].name):
         node_uuid = p["node"].uuid

@@ -1,7 +1,7 @@
 CC_INSTALL_PATH ?= /usr/local/bin
 DOCKER_REGISTRY ?= docker.chameleoncloud.org
 
-CONTAINERS := cc-openstack cc-rpm
+CONTAINERS := cc-docs cc-openstack cc-rpm
 
 .PHONY: all
 all: build install

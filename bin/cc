@@ -14,6 +14,11 @@ registry="docker.chameleoncloud.org"
 
 # Shortcut for subcommands
 case "${1:-}" in
+  docs)
+    shift # past command
+    exec docker run --rm "$registry/cc-docs" "$@"
+    exit $?
+    ;;
   rpm)
     shift # past command
     # We mount the current working directory as /work

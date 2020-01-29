@@ -52,6 +52,15 @@ In order to log in to the various nodes, sometimes it's necessary to log in as v
 
 ## Commands
 
+### `docs`
+
+This is a little convenience tool that currently just searches the (public) Chameleon docs for a term and shows you which pages matched. Just saves a browser window trip.
+
+```
+# Find doc pages referencing baremetal nodes
+cc docs search "baremetal"
+```
+
 ### `replacekey`
 
 This is a convenience utility for updating your SSH public key on all authentication servers. It works by simply taking you through a tour of all the login servers we use and then updating your `~/.ssh/authorized_keys` to contain a key you provide to the script. If it's your first time doing this, you will have to enter your password several times, as no key exists on the server for you yet and you'll have to fall back to password authentication.

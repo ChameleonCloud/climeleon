@@ -6,7 +6,7 @@ BLUE="\033[01;34m"
 GRAY="\033[01;30m"
 WHITE="\033[01;37m"
 
-term="${1:-}"
+term="${@:-}"
 query_params="project=chameleoncloud&version=latest&language=en&q=$term"
 result_json="$(curl -G -SsL \
   --data project=chameleoncloud \
@@ -27,10 +27,11 @@ if [[ "$num_results" -gt 0 ]]; then
       \"  \" + ((.key + 1)|tostring) + \". \" + .value.title + \"\n\" +
       \"\\${BLUE}     \" + .value.link + \".html\\${NC}\n\" +
       \"\\${GRAY}     | \" + (
-        .value.highlight.content[0]|gsub(\"\n\";\"\n     | \")
-        | gsub(\"<em>\";\"\\${WHITE}\")
-        | gsub(\"</em>\";\"\\${GRAY}\")
-      ) + \"\\${NC}\n\"
+        .value.inner_hits | map(
+          .highlight | to_entries | .[0].value[0] + \"...\"
+          | gsub(\"<span>\";\"\\${WHITE}\")
+          | gsub(\"</span>\";\"\\${GRAY}\")
+        ) | join(\"\n     | \")) + \"\\${NC}\n\"
     )[]" <<<"$result_json")"
   echo -e "$results"
   echo

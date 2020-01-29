@@ -8,7 +8,6 @@ This provides a new tool called `cc` that can make some operational tasks easier
   - Standardizing the execution environment for Python OpenStack clients
   - Providing a set of default OpenStack client configurations and a means of easily swapping them out.
   - Making RPM builds easier
-  - Giving you a clownish way of looking up docs for Chameleon
 
 ## Setup
 

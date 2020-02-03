@@ -112,8 +112,9 @@ def main(argv):
                 ))
 
     for p in sorted(ports_for_update, key=lambda p: p["node"].name):
-        node_uuid = p["node"].uuid
-        node_name = p["node"].name
+        node = p["node"]
+        node_uuid = node.uuid
+        node_name = node.name
         port_uuid = p["uuid"]
         padded_switch_id = str(p["switch_id"]).zfill(16)
 
@@ -126,10 +127,17 @@ def main(argv):
         ]
 
         try:
-            ironic.node.set_maintenance(node_uuid, True, 
-                maint_reason="node-assign-switch-ids: updating local_link_connection")
+            already_in_maintenance = node.maintenance
+            
+            if not already_in_maintenance:
+                ironic.node.set_maintenance(node_uuid, True, 
+                    maint_reason="node-assign-switch-ids: updating local_link_connection")
+
             ironic.port.update(port_uuid, patch)
-            ironic.node.set_maintenance(node_uuid, False)
+
+            if already_in_maintenance:
+                ironic.node.set_maintenance(node_uuid, False)
+
             LOG.info("{} port {} [{}:{}] updated to switch_id={}".format(
                 node_name, port_uuid, p["switch_info"], p["port_id"], padded_switch_id))
         except:

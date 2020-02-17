@@ -17,7 +17,7 @@ public-clouds:
     interface: public
     identity_api_version: '3'
     auth:
-      auth_url: https://openstack.tacc.chameleoncloud.org:5000
-      project_id: Chameleon
+      auth_url: https://kvm.tacc.chameleoncloud.org:5000
+      project_id: 975c0a94b784483a885f4503f70af655
       user_domain_name: Default
-    region_name: RegionOne
+    region_name: KVM@TACC

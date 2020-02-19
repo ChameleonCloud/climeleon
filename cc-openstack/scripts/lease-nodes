@@ -4,35 +4,65 @@
 #
 set -e -u -o pipefail
 
-lease="${1:-}"
+lease=""
+node=""
+
+while [[ $# -gt 0 ]]; do 
+  key="$1"
+  case "$1" in
+    -l|--lease)
+      lease="$2"
+      shift
+      ;;
+    -n|--node)
+      node="$2"
+      shift
+      ;;
+    *)
+      ;;
+  esac
+  shift
+done
 
 if [[ "$lease" == "-h" || "$lease" == "--help" ]]; then
   cat <<USAGE
-Usage: lease-nodes [lease_uuid]
+Usage: lease-nodes [--lease uuid | --node uuid]
 
-Prints the Ironic bare metal node UUIDs reserved under the given lease, if any.
+Prints a summary of Blazar leases and which Ironic nodes are reserved under
+each lease. Output can be filtered by lease UUID or by node UUID. By default,
+all leases and their reserved nodes are printed.
+
+Examples:
+  # Print all node allocations for all leases
+  lease-nodes 
+
+  # Print just node allocations for lease
+  lease-nodes --lease 6eb43c19-e1ab-492d-b0f0-ece1e4fa75f2
+
+  # Print just node allocations for node
+  lease-nodes --node b634778d-9540-48bc-9ed6-cb02943f6459 
 USAGE
 fi
 
 hosts=$(blazar host-list -f json \
   | jq 'map({"key": .id, "value": .hypervisor_hostname}) | from_entries')
 
+if [[ -n "$lease" ]]; then
+  filter="map(select(.reservations[]|select(.lease_id == \"$lease\")))"
+elif [[ -n "$node" ]]; then
+    filter="map(select(\$hosts[.resource_id] == \"$node\"))"
+else
+  filter="map(select(.reservations[].lease_id))"
+fi
+
 out=$(
-  if [[ -n "$lease" ]]; then
-    blazar host-allocation-list -f json \
-      | jq -r --argjson hosts "$hosts" \
-        "map(select(.reservations[]|select(.lease_id == \"$lease\"))) | 
-          map(\"$lease\t\" + \$hosts[.resource_id])[]"
-  else
-    blazar host-allocation-list -f json \
-      | jq -r --argjson hosts "$hosts" \
-        'map(select(.reservations[].lease_id)) | 
-          map(. as $parent | 
-            .reservations[].lease_id + "\t" + 
-              $hosts[$parent.resource_id] + "\t" + 
-              .reservations[].start_date + "\t" +
-              .reservations[].end_date)[]'
-  fi
+  blazar host-allocation-list -f json \
+    | jq -r --argjson hosts "$hosts" "$filter | 
+      map(. as \$parent |
+        .reservations[].lease_id + \"\\t\" +
+        \$hosts[\$parent.resource_id] + \"\\t\" +
+        .reservations[].start_date + \"\\t\" +
+        .reservations[].end_date)[]"
 )
 
-echo -e "lease_id\thost_id\tstart_date\tend_date\n$(sort <<<"$out")" | column -t
+echo -e "lease_uuid\tnode_uuid\tstart_date\tend_date\n$(sort <<<"$out")" | column -t

@@ -21,12 +21,18 @@ out=$(
   if [[ -n "$lease" ]]; then
     blazar host-allocation-list -f json \
       | jq -r --argjson hosts "$hosts" \
-        "map(select(.reservations[]|select(.lease_id == \"$lease\"))) | map(\"$lease\t\" + \$hosts[.resource_id])[]"
+        "map(select(.reservations[]|select(.lease_id == \"$lease\"))) | 
+          map(\"$lease\t\" + \$hosts[.resource_id])[]"
   else
     blazar host-allocation-list -f json \
       | jq -r --argjson hosts "$hosts" \
-        'map(select(.reservations[].lease_id)) | map(. as $parent | .reservations[].lease_id + "\t" + $hosts[$parent.resource_id])[]'
+        'map(select(.reservations[].lease_id)) | 
+          map(. as $parent | 
+            .reservations[].lease_id + "\t" + 
+              $hosts[$parent.resource_id] + "\t" + 
+              .reservations[].start_date + "\t" +
+              .reservations[].end_date)[]'
   fi
 )
 
-echo -e "lease_id\thost_id\n$(sort <<<"$out")" | column -t
+echo -e "lease_id\thost_id\tstart_date\tend_date\n$(sort <<<"$out")" | column -t

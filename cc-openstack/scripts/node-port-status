@@ -1,0 +1,140 @@
+#!/usr/bin/env python
+"""
+node-assign-switch-ids
+
+Intended as a migration script for https://collab.tacc.utexas.edu/issues/17386, but could
+be useful later. Exists mostly as documentation and perhaps example code that can be re-used.
+"""
+import argparse
+import itertools
+import operator
+import re
+import sys
+
+from blazarclient import client as blazar_client
+from keystoneauth1 import adapter, loading, session
+from keystoneauth1.identity import v3
+from ironicclient import client as ironic_client
+
+import logging
+logging.basicConfig(level=logging.INFO)
+LOG = logging.getLogger(__name__)
+
+BLAZAR_CLIENT_VERSION = 1
+IRONIC_CLIENT_VERSION = 1
+
+
+def unpack_dot_notation(dict_obj):
+    out = {}
+
+    def store_val(path, val, parent):
+        try:
+            key = int(path[0])
+        except ValueError:
+            key = path[0]
+
+        if isinstance(parent, list) ^ isinstance(key, int):
+            raise ValueError("Key '{}' not valid for parent of type {}".format(key, type(parent)))
+        
+        # Extend parent array (accommodate sparse arrays or unordered keys)
+        if isinstance(parent, list) and key >= len(parent):
+            parent += [None] * ((key + 1) - len(parent))
+
+        if path[1:]:
+            try:
+                int(path[1])
+                child_default = []
+            except ValueError:
+                child_default = {}
+            
+            if ((isinstance(parent, list) and parent[key] == None) or
+                (isinstance(parent, dict) and key not in parent)):
+                parent[key] = child_default
+
+            store_val(path[1:], val, parent[key])
+        else:
+            parent[key] = val
+
+    for key, val in sorted(dict_obj.items()):
+        store_val(key.split("."), val, parent=out)
+    
+    return out
+
+
+def to_bool(val):
+    return val == True or val.lower() == "true"
+
+
+def main(argv):
+    parser = argparse.ArgumentParser(
+        description="Check status of Ironic ports for sanity")
+    loading.cli.register_argparse_arguments(parser, argv, default="password")
+    loading.session.register_argparse_arguments(parser)
+    loading.adapter.register_argparse_arguments(parser)
+
+    args = parser.parse_args()
+
+    auth = loading.cli.load_from_argparse_arguments(args)
+    session = loading.session.load_from_argparse_arguments(args, auth=auth)
+    # Wrap session in adapter that sets interface/region
+    session = adapter.Adapter(
+        session=session, interface=args.os_interface, region_name=args.os_region_name)
+        
+    blazar = blazar_client.Client(
+        BLAZAR_CLIENT_VERSION, 
+        session=session, 
+        service_type="reservation"
+    )
+    # Also have to pass region in here because Ironic client is a pain
+    ironic = ironic_client.get_client(
+        IRONIC_CLIENT_VERSION, 
+        session=session,
+        region_name=args.os_region_name,
+        # Ironic client defaults to 1.9 currently, "latest" will be latest the API supports
+        os_ironic_api_version="latest"
+    )
+    
+    hosts = [unpack_dot_notation(h) for h in blazar.host.list()]
+    node_names = {n.uuid: n.name for n in ironic.node.list(sort_key='name')}
+    
+    ports_by_node = {}
+    for p in ironic.port.list(detail=True):
+        ports_by_node.setdefault(p.node_uuid, [])
+        ports_by_node[p.node_uuid].append(p)
+
+    # Justify to length of UUID (37) plus tokens, plus Mac address (17)
+    left_col_padding = 37 + 3 + 17
+
+    report_lines = []
+
+    for h in hosts:
+        node_uuid = h["hypervisor_hostname"]
+        ports = ports_by_node[node_uuid]
+        num_ports_expected = len([n for n in h["network_adapters"] if to_bool(n["enabled"])])
+        if len(ports) != num_ports_expected:
+            report_lines.append("ERROR: Node {} ({}) has {} ports, expected {}".format(
+                node_uuid, 
+                node_names[node_uuid], 
+                len(ports), 
+                num_ports_expected
+            ))
+            report_lines.append("\t{}\t{}".format(
+                "Ironic ports".ljust(left_col_padding),
+                "Blazar network_adapters"
+            ))
+            for port, net_adapter in itertools.izip_longest(ports, h["network_adapters"]):
+                port_str = "{} ({})".format(port.uuid, port.address) if port else "--"
+                net_adapter_str = "{} ({}){}".format(
+                    net_adapter["model"],
+                    net_adapter["mac"],
+                    " (not enabled)" if not to_bool(net_adapter["enabled"]) else ""
+                ) if net_adapter else "--"
+                # Justify to length of UUID (37) plus tokens, plus Mac address (17)
+                report_lines.append("\t{}\t{}".format(port_str.ljust(left_col_padding), net_adapter_str))
+            report_lines.append("")
+
+    print("\n".join(report_lines))
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))

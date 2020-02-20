@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """
-node-assign-switch-ids
+node-port-status
 
-Intended as a migration script for https://collab.tacc.utexas.edu/issues/17386, but could
-be useful later. Exists mostly as documentation and perhaps example code that can be re-used.
+Prints discrepancies between the network_adapter list stored in Blazar's
+extra properties for host and the Ironic port representations. Can be used
+to find Ironic nodes that are missing ports, or have too many ports defined.
 """
 import argparse
 import itertools

@@ -1,2 +1,2 @@
-git+https://github.com/ChameleonCloud/python-blazarclient@chameleoncloud/stable/stein#egg=python-blazarclient
+git+https://github.com/ChameleonCloud/python-blazarclient@chameleoncloud/stable/train#egg=python-blazarclient
 git+https://github.com/ChameleonCloud/python-heatclient@stable/rocky#egg=python-heatclient

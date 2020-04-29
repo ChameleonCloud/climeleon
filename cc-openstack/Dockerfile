@@ -20,6 +20,9 @@ RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstac
   && pip install -r requirements.txt -c upper-constraints.txt \
   && pip install -r requirements.forks.txt
 
+COPY python-climeleon /opt/python-climeleon
+RUN pip install /opt/python-climeleon
+
 # Runtime image
 FROM base
 

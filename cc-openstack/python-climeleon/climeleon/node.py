@@ -16,7 +16,7 @@ IRONIC_CLIENT_VERSION = 1
 
 class NodeAssignSwitchIDsCommand(BaseCommand):
 
-    @classmethod
+    @staticmethod
     def uc_assignment_strategy(cls, node, port):
         # Names are like c01, nc24.
         # Strip prefix and cast as integer.
@@ -38,7 +38,7 @@ class NodeAssignSwitchIDsCommand(BaseCommand):
         else:
             raise ValueError("Cannot figure out new port ID for node {}".format(node.uuid))
 
-    @classmethod
+    @staticmethod
     def tacc_assignment_strategy(cls, node, port):
         link = port.local_link_connection
         switch_info = link["switch_info"]
@@ -53,8 +53,8 @@ class NodeAssignSwitchIDsCommand(BaseCommand):
             ))
 
     REGION_STRATEGIES = {
-        "CHI@TACC": NodeAssignSwitchIDsCommand.tacc_assignment_strategy,
-        "CHI@UC": NodeAssignSwitchIDsCommand.uc_assignment_strategy,
+        "CHI@TACC": tacc_assignment_strategy,
+        "CHI@UC": uc_assignment_strategy,
     }
 
     def run(self):

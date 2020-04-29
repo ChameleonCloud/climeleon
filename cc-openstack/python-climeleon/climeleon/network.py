@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 from climeleon.base import BaseCommand
 
 class NetworkDeleteCommand(BaseCommand):
@@ -73,3 +75,33 @@ class NetworkDeleteCommand(BaseCommand):
         network_id = network.get("id")
         getter = getattr(neutron, "list_{}".format(name))
         return getter(network_id=network_id).get(name)
+
+
+class NetworkSegmentStatusCommand(BaseCommand):
+    description = """
+    Display the current Neutron networks assigned for each VLAN. The name of
+    network and its owning project are also displayed.
+    """
+
+    def run(self):
+        neutron = self.neutron()
+        networks = neutron.list_networks().get("networks")
+
+        rows = []
+        rows.append([
+            "physical_network",
+            "segmentation_id",
+            "name",
+            "project_id"
+        ])
+        for n in sorted(networks, key=itemgetter("provider:segmentation_id")):
+            rows.append([
+                n["provider:physical_network"],
+                str(n["provider:segmentation_id"]),
+                n["name"],
+                n["project_id"]
+            ])
+
+        widths = [max(map(len, col)) for col in zip(*rows)]
+        for row in rows:
+            print "  ".join((val.ljust(width) for val, width in zip(row, widths)))

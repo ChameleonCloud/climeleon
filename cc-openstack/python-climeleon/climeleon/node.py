@@ -137,14 +137,24 @@ class NodeAssignSwitchIDsCommand(BaseCommand):
 
 class NodeRotateIPMIPasswordCommand(BaseCommand):
 
+    STOCK_PASSWORD = "calvin"
+
     def register_args(self, parser):
         parser.add_argument("nodes", metavar="NODE", nargs="+")
         parser.add_argument("--password-file", type=FileType("r"),
                             required=True)
+        parser.add_argument("--old-password-file", type=FileType("r"))
 
     def run(self):
         new_password = self.args.password_file.read().strip()
         self.args.password_file.close()
+
+        if self.args.old_password_file:
+            old_password = self.args.old_password_file.read().strip()
+            self.args.old_password_file.close()
+        else:
+            # TODO: maybe depends if we can detect BMC vendor
+            old_password = self.STOCK_PASSWORD
 
         ironic = self.ironic()
         nodes = ironic.node.list(detail=True)
@@ -178,7 +188,7 @@ class NodeRotateIPMIPasswordCommand(BaseCommand):
                 driver_info = node.driver_info
                 ipmi_username = driver_info.get("ipmi_username")
                 ipmi_address = driver_info.get("ipmi_address")
-                ipmi_password = driver_info.get("ipmi_password")
+                ipmi_password = old_password
 
                 drac = DRACClient(
                     host=ipmi_address, username=ipmi_username,

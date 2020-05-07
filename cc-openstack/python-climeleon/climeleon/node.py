@@ -137,7 +137,7 @@ class NodeAssignSwitchIDsCommand(BaseCommand):
 
 class NodeRotateIPMIPasswordCommand(BaseCommand):
 
-    STOCK_PASSWORD = "calvin"
+    FACTORY_PASSWORD = "calvin"
 
     def register_args(self, parser):
         parser.add_argument("nodes", metavar="NODE", nargs="+")
@@ -154,7 +154,7 @@ class NodeRotateIPMIPasswordCommand(BaseCommand):
             self.args.old_password_file.close()
         else:
             # TODO: maybe depends if we can detect BMC vendor
-            old_password = self.STOCK_PASSWORD
+            old_password = self.FACTORY_PASSWORD
 
         ironic = self.ironic()
         nodes = ironic.node.list(detail=True)
@@ -194,14 +194,15 @@ class NodeRotateIPMIPasswordCommand(BaseCommand):
                     host=ipmi_address, username=ipmi_username,
                     password=ipmi_password)
 
-                # drac.set_idrac_settings({
-                #     "#Password": new_password
-                # }, idrac_fqdd="iDRAC.Users.1")
+                # TODO: we just assume it's the root user (id=1)
+                drac.set_idrac_settings({
+                    "Users.1#Password": new_password
+                })
                 self.log.info("  Updated iDRAC password")
 
                 new_driver_info = driver_info.copy()
                 new_driver_info.update(ipmi_password=new_password)
-                # ironic.node.update(node.id, driver_info=new_driver_info)
+                ironic.node.update(node.id, driver_info=new_driver_info)
                 self.log.info("  Updated Ironic node ipmi_password")
 
                 # Test that the connection works

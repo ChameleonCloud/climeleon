@@ -6,6 +6,7 @@ Intended as a migration script for https://collab.tacc.utexas.edu/issues/17386, 
 be useful later. Exists mostly as documentation and perhaps example code that can be re-used.
 """
 from argparse import FileType
+from dracclient.client import DRACClient
 import operator
 import re
 import requests
@@ -135,35 +136,6 @@ class NodeAssignSwitchIDsCommand(BaseCommand):
                 self.log.exception("failed to update port {}".format(p["uuid"]))
 
 
-class RedfishClient:
-    FACTORY_PASSWORD = "calvin"
-
-    def __init__(self, address=None, username="root", password=None):
-        if not address:
-            raise ValueError("'address' is required")
-
-        self.base_url = 'https://{}/redfish/v1/Managers/iDRAC.Embedded.1'.format(address)
-        self.username = username
-        self.password = password or self.FACTORY_PASSWORD
-
-    def update_password(self, new_password):
-        payload = {'Password': new_password}
-        headers = {'content-type': 'application/json'}
-        res = requests.patch(
-            "/".join([self.base_url, "Accounts", 1]),
-            data=payload, headers=headers, verify=False,
-            auth=(self.username, self.password))
-        res.raise_for_status()
-
-    @staticmethod
-    def from_driver_info(driver_info):
-        return RedfishClient(
-            address=driver_info.get("ipmi_address"),
-            username=driver_info.get("ipmi_username"),
-            password=driver_info.get("ipmi_password")
-        )
-
-
 class NodeRotateIPMIPasswordCommand(BaseCommand):
 
     FACTORY_PASSWORD = "calvin"
@@ -210,19 +182,25 @@ class NodeRotateIPMIPasswordCommand(BaseCommand):
 
             if not node.maintenance:
                 ironic.node.set_maintenance(
-                    node.id, True, maint_reason="Updating IPMI password")
+                    node_id, True, maint_reason="Updating IPMI password")
                 self.log.info("  Put node into maintenance mode")
 
             try:
-                redfish = RedfishClient.from_driver_info(node.driver_info)
-                # Driver info masks passwords currently...
-                redfish.password = old_password
-                redfish.update_password(new_password)
+                driver_info = node.driver_info
+                drac = DRACClient(
+                    host=driver_info.get("ipmi_address"),
+                    username=driver_info.get("ipmi_username"),
+                    password=old_password)
+                drac.set_idrac_settings({"Users.2#Password": new_password})
                 self.log.info("  Updated iDRAC password")
 
-                new_driver_info = node.driver_info.copy()
-                new_driver_info.update(ipmi_password=new_password)
-                ironic.node.update(node.id, driver_info=new_driver_info)
+                ironic.node.update(node_id, patch=[
+                    dict(
+                        path="/driver_info/ipmi_password",
+                        value=new_password,
+                        op="replace"
+                    )
+                ])
                 self.log.info("  Updated Ironic node ipmi_password")
 
                 # Test that the connection works
@@ -234,5 +212,5 @@ class NodeRotateIPMIPasswordCommand(BaseCommand):
             finally:
                 # Restore original maintenance state
                 if not node.maintenance:
-                    ironic.node.set_maintenance(node.id, False)
+                    ironic.node.set_maintenance(node_id, False)
                     self.log.info("  Reverted node maintenance state")

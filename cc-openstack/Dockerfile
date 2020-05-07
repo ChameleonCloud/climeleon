@@ -7,7 +7,9 @@ FROM python:2-alpine3.9 as base
 FROM base as builder
 ARG openstack_release=rocky
 
-RUN apk add --no-cache build-base curl git linux-headers libffi-dev openssl-dev python-dev
+RUN apk add --no-cache \
+  build-base curl git linux-headers libffi-dev libxml2-dev libxslt-dev \
+  openssl-dev python-dev
 
 RUN mkdir -p /var/lib/cc/venv
 RUN pip install virtualenv && virtualenv /var/lib/cc/venv
@@ -29,8 +31,8 @@ FROM base
 
 COPY --from=builder /var/lib/cc/venv /var/lib/cc/venv
 
-# Install runtime libraries needed for crypto
-RUN apk add --no-cache libffi openssl
+# Install runtime libraries needed for wheels
+RUN apk add --no-cache libffi libxml2 libxslt openssl
 
 # Provide a volume-mount for a current working directory (of the host)
 VOLUME ["/host"]

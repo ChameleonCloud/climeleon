@@ -65,7 +65,7 @@ class BaseCommand:
         return IronicClient.get_client(
             IRONIC_CLIENT_VERSION,
             session=self.session,
-            region_name=self.args.region_name,
+            region_name=self.session.region_name,
             # Ironic client defaults to 1.9 currently,
             # "latest" will be latest the API supports
             os_ironic_api_version='latest'

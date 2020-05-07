@@ -5,7 +5,8 @@ node-assign-switch-ids
 Intended as a migration script for https://collab.tacc.utexas.edu/issues/17386, but could
 be useful later. Exists mostly as documentation and perhaps example code that can be re-used.
 """
-from ironicclient import client
+from argparse import FileType
+from dracclient.client import DRACClient
 import operator
 import re
 
@@ -59,14 +60,7 @@ class NodeAssignSwitchIDsCommand(BaseCommand):
 
     def run(self):
         region_name = self.args.os_region_name
-        # Also have to pass region in here because Ironic client is a pain
-        ironic = client.get_client(
-            IRONIC_CLIENT_VERSION,
-            session=self.session,
-            region_name=region_name,
-            # Ironic client defaults to 1.9 currently, "latest" will be latest the API supports
-            os_ironic_api_version='latest'
-        )
+        ironic = self.ironic()
 
         ports_for_update = []
 
@@ -139,3 +133,75 @@ class NodeAssignSwitchIDsCommand(BaseCommand):
                     node_name, port_uuid, p["switch_info"], p["port_id"], padded_switch_id))
             except:
                 self.log.exception("failed to update port {}".format(p["uuid"]))
+
+
+class NodeRotateIPMIPasswordCommand(BaseCommand):
+
+    def register_args(self, parser):
+        parser.add_argument("nodes", metavar="NODE", nargs="+")
+        parser.add_argument("--password-file", type=FileType("r"),
+                            required=True)
+
+    def run(self):
+        new_password = self.args.password_file.read().strip()
+        self.args.password_file.close()
+
+        ironic = self.ironic()
+        nodes = ironic.node.list(detail=True)
+
+        def find_node(name_or_id):
+            matching = [
+                n for n in nodes
+                if n.uuid == name_or_id or n.name == name_or_id
+            ]
+            if matching:
+                return matching[0]
+            else:
+                raise ValueError("No node matched '{}'".format(name_or_id))
+
+        for n in self.args.nodes:
+            node = find_node(n)
+            node_id = node.uuid
+
+            if node.provision_state not in ["active", "available"]:
+                raise ValueError(
+                    "Node {} in invalid provision state".format(node_id))
+
+            self.log.info("Processing {} ({}):".format(node_id, node.name))
+
+            if not node.maintenance:
+                ironic.node.set_maintenance(
+                    node.id, True, maint_reason="Updating IPMI password")
+                self.log.info("  Put node into maintenance mode")
+
+            try:
+                driver_info = node.driver_info
+                ipmi_username = driver_info.get("ipmi_username")
+                ipmi_address = driver_info.get("ipmi_address")
+                ipmi_password = driver_info.get("ipmi_password")
+
+                drac = DRACClient(
+                    host=ipmi_address, username=ipmi_username,
+                    password=ipmi_password)
+
+                # drac.set_idrac_settings({
+                #     "#Password": new_password
+                # }, idrac_fqdd="iDRAC.Users.1")
+                self.log.info("  Updated iDRAC password")
+
+                new_driver_info = driver_info.copy()
+                new_driver_info.update(ipmi_password=new_password)
+                # ironic.node.update(node.id, driver_info=new_driver_info)
+                self.log.info("  Updated Ironic node ipmi_password")
+
+                # Test that the connection works
+                boot_dev = ironic.node.get_boot_device(node_id)
+                assert "boot_device" in boot_dev
+            except:
+                self.log.exception("  Failed to update password")
+                break
+            finally:
+                # Restore original maintenance state
+                if not node.maintenance:
+                    ironic.node.set_maintenance(node.id, False)
+                    self.log.info("  Reverted node maintenance state")

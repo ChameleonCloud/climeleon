@@ -29,8 +29,6 @@ RUN source /var/lib/cc/venv/bin/activate \
 # Runtime image
 FROM base
 
-COPY --from=builder /var/lib/cc/venv /var/lib/cc/venv
-
 # Install runtime libraries needed for wheels
 RUN apk add --no-cache libffi libxml2 libxslt openssl
 
@@ -40,6 +38,8 @@ WORKDIR /host
 
 # Install dependencies for scripts
 RUN apk add --no-cache bash bc coreutils curl jq util-linux
+
+COPY --from=builder /var/lib/cc/venv /var/lib/cc/venv
 
 COPY clouds2rc /usr/local/bin/
 COPY scripts/* /usr/local/bin/

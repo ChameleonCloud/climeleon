@@ -11,6 +11,7 @@ import operator
 import re
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import warnings
 
 from climeleon.base import BaseCommand
 
@@ -198,7 +199,7 @@ class NodeRotateIPMIPasswordCommand(BaseCommand):
                 requests.packages.urllib3.disable_warnings(
                     InsecureRequestWarning)
                 drac.set_idrac_settings({"Users.2#Password": new_password})
-                requests.packages.urllib3.resetwarnings()
+                warnings.resetwarnings()
 
                 self.log.info("  Updated iDRAC password")
 

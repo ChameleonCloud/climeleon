@@ -10,6 +10,7 @@ from dracclient.client import DRACClient
 import operator
 import re
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from climeleon.base import BaseCommand
 
@@ -191,7 +192,14 @@ class NodeRotateIPMIPasswordCommand(BaseCommand):
                     host=driver_info.get("ipmi_address"),
                     username=driver_info.get("ipmi_username"),
                     password=old_password)
+
+                # Temporarily disable insecure HTTPS warnings while we call out
+                # to the iDRAC Redfish address over HTTPS
+                requests.packages.urllib3.disable_warnings(
+                    InsecureRequestWarning)
                 drac.set_idrac_settings({"Users.2#Password": new_password})
+                requests.packages.urllib3.resetwarnings()
+
                 self.log.info("  Updated iDRAC password")
 
                 ironic.node.update(node_id, patch=[
@@ -201,6 +209,7 @@ class NodeRotateIPMIPasswordCommand(BaseCommand):
                         op="replace"
                     )
                 ])
+
                 self.log.info("  Updated Ironic node ipmi_password")
 
                 # Test that the connection works

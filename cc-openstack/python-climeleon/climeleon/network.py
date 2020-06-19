@@ -133,8 +133,14 @@ class NetworkPublicIPStatusCommand(BaseCommand):
         return allocation_pools
 
     def run(self):
+        blazar = self.blazar()
         neutron = self.neutron()
         routers = {}
+
+        reservable_ips = [
+            ipaddress.IPv4Address(fip['floating_ip_address'])
+            for fip in blazar.floatingip.list()
+        ]
 
         ports = neutron.list_ports().get("ports")
 
@@ -151,7 +157,7 @@ class NetworkPublicIPStatusCommand(BaseCommand):
         }
 
         allocation_pools = self._public_allocation_pools(neutron)
-        all_addresses = []
+        all_addresses = list(reservable_ips)
         for p in allocation_pools:
             start_ip = ipaddress.IPv4Address(p.get("start"))
             end_ip = ipaddress.IPv4Address(p.get("end"))
@@ -162,11 +168,13 @@ class NetworkPublicIPStatusCommand(BaseCommand):
         rows.append([
             "public_ip",
             "allocation_type",
+            "reservable",
             "project_id",
         ])
 
         for public_ip in sorted(all_addresses):
             port = ports_by_ip.get(str(public_ip))
+            reservable = str(public_ip in reservable_ips)
 
             allocation_type = "unallocated"
             project_id = "none"
@@ -187,6 +195,7 @@ class NetworkPublicIPStatusCommand(BaseCommand):
             rows.append([
                 str(public_ip),
                 allocation_type,
+                reservable,
                 project_id,
             ])
 

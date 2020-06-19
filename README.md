@@ -111,6 +111,12 @@ cc scp my-script.sh admin01.uc.chameleoncloud.org:
 cc scp -3 admin01.uc.chameleoncloud.org:my-script.sh master2.chameleon.tacc.utexas.edu:
 ```
 
+It is also possible to download the SSH config that makes this utility work, in case you want to install it permanently.
+
+```
+cc ssh config >>~/.ssh/config
+```
+
 ### `openstack` (and legacy OpenStack clients)
 
 > **Note**: requires Docker.

@@ -38,4 +38,8 @@ trap cleanup EXIT
 cmd="${1:-ssh}"
 shift
 
-exec "$cmd" -F "$config" "$@"
+if [[ "$1" == "config" ]]; then
+  cat "$config"
+else
+  exec "$cmd" -F "$config" "$@"
+fi

@@ -1,8 +1,6 @@
 crudini
 gnocchiclient
 osc-placement
-# Until Python 3 compatibility
-py2-ipaddress
 python-cinderclient
 python-dracclient
 python-glanceclient

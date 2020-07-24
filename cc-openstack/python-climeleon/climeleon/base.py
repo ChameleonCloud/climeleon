@@ -9,6 +9,7 @@ from gnocchiclient.v1.client import Client as GnocchiClient
 from ironicclient import client as IronicClient
 from keystoneauth1 import adapter, loading, session
 from keystoneauth1.identity import v3
+from keystoneclient.v3.client import Client as KeystoneClient
 from neutronclient.v2_0.client import Client as NeutronClient
 from novaclient.client import Client as NovaClient
 
@@ -69,6 +70,13 @@ class BaseCommand:
             # Ironic client defaults to 1.9 currently,
             # "latest" will be latest the API supports
             os_ironic_api_version='latest'
+        )
+
+    def keystone(self):
+        return KeystoneClient(
+            session=self.session,
+            interface=self.session.interface,
+            region_name=self.session.region_name
         )
 
     def neutron(self):

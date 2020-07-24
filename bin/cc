@@ -47,11 +47,29 @@ esac
 
 cloud="${1:-}"
 [[ -n "$cloud" ]] || {
-  cat <<USAGE
-Usage: $0 <cloud> <command>
+  cat <<'USAGE'
+cc: CLI helper for Chameleon
 
-Executes <command> within a shell that is pre-configured for
-communication with a specific OpenStack cloud named <cloud>.
+Execute:
+  cc CLOUD CMD: Execute CMD against the cloud configuration identified by CLOUD.
+    Any OpenStack client e.g., `openstack` or `blazar` can be run in this way.
+    There are also a series of custom helper scripts that summarize or perform
+    actions on the testbed. Running with no CMD opens an interactive shell.
+
+  # Open interactive shell for TACC cloud (user creds)
+  cc tacc
+  # List projects for TACC cloud (admin creds)
+  cc tacc_admin openstack project list
+  # Inspect a Keystone token on UC cloud (admin creds)
+  cc uc_admin token-inspect TOKEN
+Subcommands: invoke with -h to see additional usage info.
+  cc vault: Nimbus vault secrets helper.
+  cc docs: Documentation search.
+SSH/SCP:
+  cc [ssh|scp]: A wrapper for SSH/SCP that handles configuring jump hosts and
+    other connection complexities.
+Update:
+  cc update: Updates tool to latest version.
 USAGE
   exit 1
 }

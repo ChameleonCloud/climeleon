@@ -19,12 +19,6 @@ case "${1:-}" in
     exec docker run --rm "$registry/cc-docs" "$@"
     exit $?
     ;;
-  rpm)
-    shift # past command
-    # We mount the current working directory as /work
-    exec docker run --rm -v "$PWD:/work" "$registry/cc-rpm" "$@"
-    exit $?
-    ;;
   ssh|scp)
     exec "$DIR/cc-ssh" "$@"
     exit $?
@@ -35,7 +29,7 @@ case "${1:-}" in
     exit $?
     ;;
   update)
-    for image in cc-docs cc-openstack cc-rpm; do
+    for image in cc-docs cc-openstack; do
       printf "Updating $image command... "
       docker pull "$registry/$image" >/dev/null || break
       printf "($(docker inspect "$registry/$image" -f 'created={{.Created}}'))\n"

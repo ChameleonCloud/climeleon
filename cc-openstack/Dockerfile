@@ -1,4 +1,4 @@
-FROM python:2-alpine3.9 as base
+FROM centos:8 as base
 
 # Builder (helper) image
 # This image is used to install pip packages, which are then simply copied
@@ -7,12 +7,14 @@ FROM python:2-alpine3.9 as base
 FROM base as builder
 ARG openstack_release=rocky
 
-RUN apk add --no-cache \
-  build-base curl git linux-headers libffi-dev libxml2-dev libxslt-dev \
-  openssl-dev python-dev
+RUN dnf group install -y "Development Tools" \
+  && dnf install -y openssl-devel python3-devel
+# RUN dnf install -y \
+#   build-base curl git linux-headers libffi-dev libxml2-dev libxslt-dev \
+#   openssl-dev python-dev
 
-RUN mkdir -p /var/lib/cc/venv
-RUN pip install virtualenv && virtualenv /var/lib/cc/venv
+RUN mkdir -p /var/lib/cc
+RUN python3 -m venv /var/lib/cc/venv
 
 COPY requirements.txt /requirements.txt
 COPY requirements.forks.txt /requirements.forks.txt
@@ -30,14 +32,21 @@ RUN source /var/lib/cc/venv/bin/activate \
 FROM base
 
 # Install runtime libraries needed for wheels
-RUN apk add --no-cache libffi libxml2 libxslt openssl
+RUN dnf install -y \
+  bash \
+  bc \
+  curl \
+  jq \
+  libffi \
+  libxml2 \
+  libxslt \
+  openssl \
+  python3 \
+  which
 
 # Provide a volume-mount for a current working directory (of the host)
 VOLUME ["/host"]
 WORKDIR /host
-
-# Install dependencies for scripts
-RUN apk add --no-cache bash bc coreutils curl jq util-linux
 
 COPY --from=builder /var/lib/cc/venv /var/lib/cc/venv
 

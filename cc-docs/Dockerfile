@@ -1,6 +1,6 @@
-FROM alpine:3.7
+FROM centos:8
 
-RUN apk add --no-cache bash curl jq
+RUN dnf install -y bash curl jq
 
 RUN mkdir /work
 WORKDIR /work

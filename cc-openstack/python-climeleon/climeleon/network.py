@@ -95,7 +95,12 @@ class NetworkSegmentStatusCommand(BaseCommand):
             "name",
             "project_id"
         ])
-        for n in sorted(networks, key=itemgetter("provider:segmentation_id")):
+
+        def sort_key(x):
+            # Handle networks without a VLAN tag, which have no segment ID
+            return x.get("provider:segmentation_id") or -1
+
+        for n in sorted(networks, key=sort_key):
             rows.append([
                 n["provider:physical_network"],
                 str(n["provider:segmentation_id"]),

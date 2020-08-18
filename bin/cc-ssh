@@ -5,7 +5,7 @@
 # for accessing Chameleon hosts.
 set -e -u -o pipefail
 
-tacc_jump_host="chameleon01.tacc.utexas.edu"
+tacc_jump_host="staff.chameleon.tacc.utexas.edu"
 anl_jump_host="login.mcs.anl.gov"
 
 config="$(mktemp)"

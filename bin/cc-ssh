@@ -11,21 +11,22 @@ anl_jump_host="login.mcs.anl.gov"
 config="$(mktemp)"
 ssh="ssh -F $config"
 cat >"$config" <<SSH_CONFIG
-Host *.chameleon.tacc.utexas.edu chameleon06.tacc.utexas.edu dev.tacc.chameleoncloud.org
+# TACC sites
+Host *.chameleon.tacc.utexas.edu chameleon*.tacc.utexas.edu *.tacc.chameleoncloud.org !$tacc_jump_host
   User $TACC_USER
   ProxyCommand ssh -qW %h:%p $TACC_USER@$tacc_jump_host
 
-Host *.tacc.utexas.edu *.tacc.chameleoncloud.org
-  User $TACC_USER
-
+# UC sites
 Host *.uc.chameleoncloud.org
   User $UC_USER
   ProxyCommand ssh -qW %h:%p $ANL_USER@$anl_jump_host
 
+# Nimbus
 Host *.mcs.anl.gov !$anl_jump_host
   User $ANL_USER
   ProxyCommand ssh -qW %h:%p $ANL_USER@$anl_jump_host
 
+# Northwestern sites
 Host *.northwestern.edu
   User $NU_USER
 SSH_CONFIG

@@ -3,21 +3,21 @@ public-clouds:
     interface: public
     identity_api_version: '3'
     auth:
-      auth_url: https://chi.tacc.chameleoncloud.org:5000
+      auth_url: https://chi.tacc.chameleoncloud.org:5000/v3
       project_id: 975c0a94b784483a885f4503f70af655
       user_domain_name: Default
   chameleon_dev:
     interface: public
     identity_api_version: '3'
     auth:
-      auth_url: https://dev.tacc.chameleoncloud.org:5000
+      auth_url: https://dev.tacc.chameleoncloud.org:5000/v3
       project_id: 60d5cd5e257749d19c57f5d8845eac0e
       user_domain_name: Default
   chameleon_kvm:
     interface: public
     identity_api_version: '3'
     auth:
-      auth_url: https://kvm.tacc.chameleoncloud.org:5000
+      auth_url: https://kvm.tacc.chameleoncloud.org:5000/v3
       project_id: 975c0a94b784483a885f4503f70af655
       user_domain_name: Default
     region_name: KVM@TACC

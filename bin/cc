@@ -98,6 +98,7 @@ else
 fi
 
 docker_options=(--rm --interactive)
+docker_options+=(-e "OS_AUTH_TYPE=v3password")
 docker_options+=(-e "OS_USERNAME=$CHAMELEON_USER")
 docker_options+=(-e "OS_PASSWORD=$password")
 docker_options+=(-e "OS_CLOUD=$cloud")

@@ -6,7 +6,7 @@ clouds:
     cloud: chameleon
     region_name: CHI@TACC
     auth:
-      project_id: 570aad8999f7499db99eae22fe9b29bb
+      project_name: openstack
   tacc_dev:
     cloud: chameleon_dev
     region_name: CHI_DEV
@@ -14,7 +14,7 @@ clouds:
     cloud: chameleon_dev
     region_name: CHI_DEV
     auth:
-      project_id: e8ae724d28374d0fa15a0e16674b5c47
+      project_name: openstack
 
   uc:
     cloud: chameleon
@@ -26,7 +26,7 @@ clouds:
     region_name: CHI@UC
     auth:
       auth_url: https://chi.uc.chameleoncloud.org:5000/v3
-      project_id: 570aad8999f7499db99eae22fe9b29bb
+      project_name: openstack
   uc_dev:
     cloud: chameleon_dev
     region_name: CHI_DEV_UC
@@ -37,20 +37,19 @@ clouds:
     region_name: CHI_DEV_UC
     auth:
       auth_url: https://dev.uc.chameleoncloud.org:5000/v3
-      project_id: e8ae724d28374d0fa15a0e16674b5c47
+      project_name: openstack
 
   nu:
     cloud: chameleon
     region_name: CHI@NU
     auth:
       auth_url: https://sl-ciab.northwestern.edu:5000/v3
-      project_id: e16bc9edea3140eebde6697474b8b38c
   nu_admin:
     cloud: chameleon
     region_name: CHI@NU
     auth:
       auth_url: https://sl-ciab.northwestern.edu:5000/v3
-      project_id: 159273bda54e4019af55119850ec87dd
+      project_name: openstack
 
   kvm:
     cloud: chameleon_kvm
@@ -58,5 +57,4 @@ clouds:
   kvm_admin:
     cloud: chameleon_kvm
     auth:
-      project_id: 570aad8999f7499db99eae22fe9b29bb
-
+      project_name: openstack

@@ -13,7 +13,7 @@ USAGE
 }
 
 openstack --os-cloud="$cloud" configuration show --unmask -f json \
-  | jq -r 'to_entries 
+  | jq -r 'to_entries
     | map({key:(.key|sub("auth.";"")|sub("^url$";"auth_url")), value})
-    | map(select(.key|test("auth|identity|interface|password|region|project|user"))) 
+    | map(select(.key|test("auth|client|discovery|identity|interface|password|project|protocol|region|token|user")))
     | map("OS_" + (.key|ascii_upcase) + "=" + (.value|tostring))[]'

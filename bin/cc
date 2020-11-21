@@ -91,10 +91,13 @@ For example:
   # export for use in sub-shells
   export -f chameleon_password
 
+The function will be passed the name of the cloud as
+its first argument, e.g. "chi_uc".
+
 NOPASSWD
   exit 1
 else
-  password="$(chameleon_password)"
+  password="$(chameleon_password "$cloud")"
 fi
 
 docker_options=(--rm --interactive)

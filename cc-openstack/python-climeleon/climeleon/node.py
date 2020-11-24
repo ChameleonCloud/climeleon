@@ -255,16 +255,22 @@ class NodeEnrollCommand(BaseCommand):
       # the section does not matter so long as the first part is the name of a
       # node defined elsewhere in the config. This example uses the consistent
       # network device name of the interface.
-      [node01.eno1]
+      [node01.ports.eno1]
       switch_name = LeafSwitch01
       switch_port_id = Te 1/10/1
       mac_address = 00:00:de:ad:be:ef
+      [node01.ports.eno2]
+      switch_name = LeafSwitch01-01
+      switch_port_id = Te 1/4/1
+      mac_address = 00:00:de:ad:be:f0
 
     """
 
     DEFAULT_PROPERTIES = {
         'capabilities': 'boot_option:local',
     }
+
+    ALLOWED_SUBSECTIONS = ['ports']
 
     def register_args(self, parser):
         parser.add_argument("nodes", metavar="NODE", nargs="*")
@@ -293,8 +299,12 @@ class NodeEnrollCommand(BaseCommand):
                     node_configs[section][bucket][key] = value
             else:
                 # Assume these are port declarations
-                node, _ = section.split('.')
-                node_configs[node]['ports'].append(config[section])
+                node, subsection, _ = section.split('.')
+                if subsection not in self.ALLOWED_SUBSECTIONS:
+                    raise ValueError(
+                        f'Unknown subsection {subsection} for {node}! '
+                        f'Allowed values: {",".join(self.ALLOWED_SUBSECTIONS)}')
+                node_configs[node][subsection].append(config[section])
 
         # Allow user to filter list
         if self.args.nodes:
@@ -352,8 +362,9 @@ class NodeEnrollCommand(BaseCommand):
             self.log.info(f'Created Ironic node {node.uuid} ({node_name})')
         return node
 
-    def _ensure_ironic_port(self, ironic, node_port):
-        pass
+    def _ensure_ironic_port(self, ironic, ironic_node, node_port_conf):
+        ports = ironic.port.list(node=ironic_node.uuid)
+
 
     def _ensure_blazar_host(self, blazar, ironic_node, blazar_hosts):
         node_uuid = ironic_node.uuid
@@ -381,7 +392,7 @@ class NodeEnrollCommand(BaseCommand):
         node = self._ensure_ironic_node(ironic, node_conf)
 
         for node_port in node_conf['ports']:
-            self._ensure_ironic_port(ironic, node_port)
+            self._ensure_ironic_port(ironic, node, node_port)
 
         ironic.node.set_provision_state(node.uuid, 'provide')
         ironic.node.wait_for_provision_state(node.uuid, 'available')

@@ -6,7 +6,6 @@ import sys
 import chi
 
 import logging
-logging.basicConfig(level=logging.INFO)
 
 
 class BaseCommand:
@@ -24,6 +23,7 @@ class BaseCommand:
 
     def __init__(self, argv=None):
         self.args = self.parse_args(argv)
+        logging.basicConfig(level=self.args.log_level)
         self.session = chi.session()
         self.log = logging.getLogger(__name__)
 
@@ -51,6 +51,9 @@ class BaseCommand:
     def parse_args(self, argv):
         argv = sys.argv[1:]
         parser = argparse.ArgumentParser(description=self.description)
+        parser.add_argument("--debug", dest="log_level",
+            action="store_const", const=logging.DEBUG, default=logging.INFO,
+            help="enable debug logging")
 
         self.register_args(parser)
 

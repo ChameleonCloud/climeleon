@@ -11,4 +11,4 @@ python-novaclient
 python-openstackclient
 python-swiftclient
 # Chameleon client
-python-chi>=0.4.2,<1.0.0
+python-chi>=0.4.4,<1.0.0

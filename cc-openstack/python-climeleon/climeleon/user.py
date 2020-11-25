@@ -14,7 +14,6 @@ class UserInspectCommand(BaseCommand):
 
     def run(self):
         user = self.args.user
-        region_name = self.args.os_region_name
         keystone = self.keystone()
 
         query = {}
@@ -37,16 +36,20 @@ class UserInspectCommand(BaseCommand):
             user = keystone.users.get(user_id)
             is_federated = user.domain_id != 'default'
             projects = sorted(keystone.projects.list(user=user), key=attrgetter('name'))
-            project_lines = [
-                f' - {p.name or p.id}' for p in projects
-            ] or [' (none)']
+            if projects:
+                project_lines = (
+                    [['ID', 'Name', 'Domain']] + [
+                        [p.id, p.name, p.domain_id] for p in projects
+                    ])
+            else:
+                project_lines = [['(none)']]
             report_lines.extend([
                 '-'*60,
                 f'ID: {user.id}',
                 f'Name: {user.name}',
                 f'Domain: {user.domain_id}',
                 f'Federated: {is_federated}',
-                'Projects:', '\n'.join(project_lines),
+                'Projects:', '  ' + '\n  '.join(column_align(project_lines)),
             ])
 
         print('\n'.join(report_lines))

@@ -22,8 +22,17 @@ make
 
 ### Credentials
 
-The scripts need to use your credentials in order to call the OpenStack API. To
-do this, it looks for a function in your shell called `chameleon_password`,
+The scripts need to use your credentials in order to call the OpenStack API. The
+value of the `CHAMELEON_USER` environment variable will be used as your Chameleon
+username, so ensure it is set:
+
+```shell
+export CHAMELEON_USER=my_cham_user
+# Or, e.g., for users using Globus auth
+export CHAMELEON_USER=my_email_address@example.com
+```
+
+The scripts additionally look for a function in your shell called `chameleon_password`,
 which you should provide. If you do not have this function sourced you will be
 notified and the script will bail. It is recommended that the function feature
 some level of indirection, such as calling an external password manager to

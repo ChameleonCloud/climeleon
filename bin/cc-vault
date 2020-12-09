@@ -16,6 +16,7 @@ Additionally, the following commands are pass-throughs to the Vault CLI:
   list <path>: Lists all keys nested directly under the search path
   read <path>: Read the value of a key at a given path
   write <path> value=<value>: Write a new value to a key at a given path
+  delete <path>: Delete a key and associated secrets
 USAGE
   exit 1
 }
@@ -25,7 +26,7 @@ case "${1:-}" in
   login)
     cmd+=(bash -ic vault_login)
     ;;
-  list|read|write)
+  list|read|write|delete)
     cmd+=(vault "$@")
     ;;
   search)

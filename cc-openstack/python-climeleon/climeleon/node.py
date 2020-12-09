@@ -1,7 +1,6 @@
 from argparse import FileType
-from blazarclient.exception import BlazarClientException
 import configparser
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from dracclient.client import DRACClient
 from ironicclient.exc import HTTPNotFound
 import re
@@ -298,13 +297,14 @@ class NodeEnrollCommand(BaseCommand):
                     bucket = 'driver_info' if key.startswith('ipmi') else 'properties'
                     node_configs[section][bucket][key] = value
             else:
-                # Assume these are port declarations
-                node, subsection, _ = section.split('.')
+                node, subsection, id = section.split('.')
                 if subsection not in self.ALLOWED_SUBSECTIONS:
                     raise ValueError(
                         f'Unknown subsection {subsection} for {node}! '
                         f'Allowed values: {",".join(self.ALLOWED_SUBSECTIONS)}')
-                node_configs[node][subsection].append(config[section])
+                sub = dict(config[section].items())
+                sub['id'] = id
+                node_configs[node][subsection].append(sub)
 
         # Allow user to filter list
         if self.args.nodes:
@@ -322,7 +322,7 @@ class NodeEnrollCommand(BaseCommand):
             except:
                 self.log.exception(f'Failed to enroll node {node}!')
 
-    def _to_ironic_patch(self, node_conf):
+    def _to_ironic_patch(self, props):
         def to_patch(obj, path=''):
             patch = []
             for k, v in obj.items():
@@ -335,36 +335,91 @@ class NodeEnrollCommand(BaseCommand):
                         'value': v
                     })
             return patch
-        return to_patch(self._to_ironic_configurables(node_conf))
-
-    def _to_ironic_configurables(self, node_conf):
-        node_configurables = node_conf.copy()
-        # Ports are configured via a separate call
-        node_configurables.pop('ports', None)
-        return node_configurables
+        return to_patch(props)
 
     def _ensure_ironic_node(self, ironic, node_conf):
         node_name = node_conf['name']
+        node_params = node_conf.copy()
+        # Ports are configured via a separate call
+        node_params.pop('ports', None)
+
         try:
             node = ironic.node.get(node_name)
             if node.provision_state != 'manageable':
+                self.log.debug(f'Setting Ironic node {node.uuid} to manageable')
                 ironic.node.set_provision_state(node.uuid, 'manage')
                 ironic.node.wait_for_provision_state(node.uuid, 'manageable')
-            patch = self._to_ironic_patch(node_conf)
-            self.log.debug(patch)
+            patch = self._to_ironic_patch(node_params)
+            self.log.debug(f'Ironic node patch for {node.uuid}: {patch}')
             ironic.node.update(node.uuid, patch)
             self.log.info(f'Update Ironic node {node.uuid} ({node_name})')
         except HTTPNotFound:
-            node_create = self._to_ironic_configurables(node_conf)
-            node_create['name'] = node_name
-            self.log.debug(node_create)
-            node = ironic.node.create(node_create)
+            node_params['name'] = node_name
+            self.log.debug(f'Ironic node create: {node_params}')
+            node = ironic.node.create(**node_params)
             self.log.info(f'Created Ironic node {node.uuid} ({node_name})')
         return node
 
-    def _ensure_ironic_port(self, ironic, ironic_node, node_port_conf):
-        ports = ironic.port.list(node=ironic_node.uuid)
+    def _ensure_ironic_ports(self, ironic, ironic_node, node_port_confs):
+        node_id = ironic_node.uuid
+        ironic_ports = {
+            p.address: p for p in ironic.port.list(node=node_id)
+        }
+        conf_ports = {
+            p['mac_address']: p for p in node_port_confs
+        }
 
+        existing = set(ironic_ports.keys())
+        configured = set(conf_ports.keys())
+
+        # TODO: this is a bit hairy because Ironic will, if it encounters a tie
+        # in a decision between which port to attach a Neutron VIF to, pick the
+        # first one. This means that if we have two NICs and 1 is the data plane
+        # and one is the control plane, and we have no other way of
+        # differentiating them, we need to put the control plane first. The
+        # solution here is to separate the control and data planes as different
+        # Neutron physical networks.
+
+        # Remove those not configured
+        for mac in (existing - configured):
+            port_id = ironic_ports[mac].uuid
+            ironic.port.delete(port_id)
+            self.log.info(f'Deleted Ironic port {port_id} for {node_id}')
+
+        def port_params(mac):
+            return {
+                'address': mac,
+                'local_link_connection': {
+                    # We don't use switch_ids at the moment but this should
+                    # be the MAC of the switch's management interface.
+                    'switch_id': '00:00:00:00:00:00',
+                    'port_id': conf_ports[mac]['switch_port_id'],
+                    'switch_info': conf_ports[mac]['switch_name'],
+                },
+                'pxe_enabled': True,
+                'extra': {
+                    # 'id' of port config is its Linux device by convention.
+                    # This extra property is just for bookkeeping/convenience.
+                    'device': conf_ports[mac]['id'],
+                },
+            }
+
+        # Add missing from configured
+        for mac in (configured - existing):
+            create_kwargs = port_params(mac)
+            self.log.debug(f'Ironic port create for {node_id}: {create_kwargs}')
+            port = ironic.port.create(
+                node_uuid=node_id,
+                **create_kwargs)
+            self.log.info(f'Created Ironic port {port.uuid} for {node_id}')
+
+        # Update existing from configured
+        for mac in (existing & configured):
+            port_id = ironic_ports[mac].uuid
+            update_kwargs = port_params(mac)
+            self.log.debug(f'Ironic port {port_id} update: {update_kwargs}')
+            ironic.port.update(port_id, self._to_ironic_patch(update_kwargs))
+            self.log.info(f'Updated Ironic port {port_id} for {node_id}')
 
     def _ensure_blazar_host(self, blazar, ironic_node, blazar_hosts):
         node_uuid = ironic_node.uuid
@@ -390,11 +445,11 @@ class NodeEnrollCommand(BaseCommand):
         blazar = self.blazar()
 
         node = self._ensure_ironic_node(ironic, node_conf)
+        self._ensure_ironic_ports(ironic, node, node_conf['ports'])
 
-        for node_port in node_conf['ports']:
-            self._ensure_ironic_port(ironic, node, node_port)
-
-        ironic.node.set_provision_state(node.uuid, 'provide')
-        ironic.node.wait_for_provision_state(node.uuid, 'available')
+        if node.provision_state != 'available':
+            self.log.debug(f'Setting Ironic node {node.uuid} to available')
+            ironic.node.set_provision_state(node.uuid, 'provide')
+            ironic.node.wait_for_provision_state(node.uuid, 'available')
 
         self._ensure_blazar_host(blazar, node, blazar_hosts)

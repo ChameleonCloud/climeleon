@@ -102,13 +102,16 @@ clouds:
     auth:
       auth_url: https://kvm.tacc.chameleoncloud.org:5000/v3
       client_id: keystone-kvm-prod
+    region_name: KVM@TACC
   kvm_admin:
     cloud: chameleon
     auth:
       auth_url: https://kvm.tacc.chameleoncloud.org:5000/v3
       client_id: keystone-kvm-prod
       project_name: openstack
+    region_name: KVM@TACC
   kvm_system:
     cloud: chameleon_system
     auth:
       auth_url: https://kvm.tacc.chameleoncloud.org:5000/v3
+    region_name: KVM@TACC

@@ -5,30 +5,65 @@
 # for accessing Chameleon hosts.
 set -e -u -o pipefail
 
-tacc_jump_host="staff.chameleon.tacc.utexas.edu"
-anl_jump_host="login.mcs.anl.gov"
+#Env var initialization
+TACC_USER=${TACC_USER:-$USER}
+tacc_ssh_id=${tacc_ssh_id:-$chameleon_ssh_id}
+tacc_jump_host=${tacc_jump_host:-"staff.chameleon.tacc.utexas.edu"}
+
+UC_USER=${UC_USER:-$USER}
+uc_ssh_id=${uc_ssh_id:-$chameleon_ssh_id}
+
+MCS_USER=${MCS_USER:-$USER}
+mcs_ssh_id=${mcs_ssh_id:-$chameleon_ssh_id}
+mcs_jump_host=${mcs_jump_host:-"login.mcs.anl.gov"}
+
+CELS_USER=${CELS_USER:-$USER}
+cels_ssh_id=${cels_ssh_id:-$chameleon_ssh_id}
+cels_jump_host=${cels_jump_host:-"logins.cels.anl.gov"}
+
+NU_USER=${NU_USER:-$USER}
+nu_ssh_id=${nu_ssh_id:-$chameleon_ssh_id}
 
 config="$(mktemp)"
 ssh="ssh -F $config"
 cat >"$config" <<SSH_CONFIG
-# TACC sites
-Host *.chameleon.tacc.utexas.edu chameleon*.tacc.utexas.edu *.tacc.chameleoncloud.org !$tacc_jump_host
-  User $TACC_USER
-  ProxyCommand ssh -qW %h:%p $TACC_USER@$tacc_jump_host
+#Global Options
+Host *
+LogLevel Error
 
-# UC sites
+#Disable ProxyJump for jumphosts themselves
+Host ${tacc_jump_host} ${mcs_jump_host} ${cels_jump_host}
+    ProxyJump none
+
+# TACC domains
+Host *.chameleon.tacc.utexas.edu chameleon*.tacc.utexas.edu *.tacc.chameleoncloud.org
+  User $TACC_USER
+  IdentityFile ${tacc_ssh_id}
+  ProxyJump $TACC_USER@$tacc_jump_host
+
+# UC domains on MCS
 Host *.uc.chameleoncloud.org
   User $UC_USER
-  ProxyCommand ssh -qW %h:%p $ANL_USER@$anl_jump_host
+  IdentityFile ${uc_ssh_id}
+  ProxyJump $MCS_USER@$mcs_jump_host
 
-# Nimbus
-Host *.mcs.anl.gov !$anl_jump_host
-  User $ANL_USER
-  ProxyCommand ssh -qW %h:%p $ANL_USER@$anl_jump_host
+# MCS at ANL
+Host *.mcs.anl.gov
+  User $MCS_USER
+  IdentityFile ${mcs_ssh_id}
+  ProxyJump $MCS_USER@$mcs_jump_host
 
-# Northwestern sites
+# GCE on CELS at ANL
+Host *.cels.anl.gov
+  User $CELS_USER
+  IdentityFile ${cels_ssh_id}
+  ProxyJump $CELS_USER@$cels_jump_host
+
+# Northwestern
 Host *.northwestern.edu
   User $NU_USER
+  IdentityFile ${nu_ssh_id}
+
 SSH_CONFIG
 
 cleanup() {

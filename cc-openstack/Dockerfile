@@ -29,8 +29,8 @@ RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstac
 # to invalidate the previous layer all the time, as it's expensive.
 RUN source /var/lib/cc/venv/bin/activate && \
   pip install \
-    python-chi>=0.4.4,<1.0.0 \
-    python-chi-operator>=0.1.1
+    "python-chi>=0.4.4,<1.0.0" \
+    "python-chi-operator>=0.1.2"
 
 # Runtime image
 FROM base

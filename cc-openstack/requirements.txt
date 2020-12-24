@@ -12,4 +12,4 @@ python-openstackclient
 python-swiftclient
 # Chameleon client
 python-chi>=0.4.4,<1.0.0
-python-chi-operator
+python-chi-operator>=0.1.1

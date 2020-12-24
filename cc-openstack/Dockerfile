@@ -24,6 +24,14 @@ RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstac
   && pip install -r requirements.txt -c upper-constraints.txt \
   && pip install -r requirements.forks.txt
 
+# Install Chameleon libraries. These are in a separate layer because
+# they change way more often than the base requirements, and it's wasteful
+# to invalidate the previous layer all the time, as it's expensive.
+RUN source /var/lib/cc/venv/bin/activate && \
+  pip install \
+    python-chi>=0.4.4,<1.0.0 \
+    python-chi-operator>=0.1.1
+
 # Runtime image
 FROM base
 

@@ -5,30 +5,74 @@
 # for accessing Chameleon hosts.
 set -e -u -o pipefail
 
-tacc_jump_host="staff.chameleon.tacc.utexas.edu"
-anl_jump_host="login.mcs.anl.gov"
+#Env var initialization
+CHAMELEON_SSH_ID=${CHAMELEON_SSH_ID:-"~/.ssh/id_rsa"}
+
+TACC_USER=${TACC_USER:-$USER}
+TACC_SSH_ID=${TACC_SSH_ID:-$CHAMELEON_SSH_ID}
+TACC_JUMP_HOST=${TACC_JUMP_HOST:-"staff.chameleon.tacc.utexas.edu"}
+
+UC_USER=${UC_USER:-$USER}
+UC_SSH_ID=${UC_SSH_ID:-$CHAMELEON_SSH_ID}
+
+MCS_USER=${MCS_USER:-$USER}
+MCS_SSH_ID=${MCS_SSH_ID:-$CHAMELEON_SSH_ID}
+MCS_JUMP_HOST=${MCS_JUMP_HOST:-"login.mcs.anl.gov"}
+
+CELS_USER=${CELS_USER:-$USER}
+CELS_SSH_ID=${CELS_SSH_ID:-$CHAMELEON_SSH_ID}
+CELS_JUMP_HOST=${CELS_JUMP_HOST:-"logins.cels.anl.gov"}
+
+NU_USER=${NU_USER:-$USER}
+NU_SSH_ID=${NU_SSH_ID:-$CHAMELEON_SSH_ID}
 
 config="$(mktemp)"
 ssh="ssh -F $config"
 cat >"$config" <<SSH_CONFIG
-# TACC sites
-Host *.chameleon.tacc.utexas.edu chameleon*.tacc.utexas.edu *.tacc.chameleoncloud.org !$tacc_jump_host
-  User $TACC_USER
-  ProxyCommand ssh -qW %h:%p $TACC_USER@$tacc_jump_host
+#Global Options
+Host *
+LogLevel Error
 
-# UC sites
+AddKeysToAgent yes
+ForwardAgent no
+# Ensure KnownHosts are unreadable if leaked - it is otherwise easier to know which hosts your keys have access to.
+HashKnownHosts yes
+# Host keys the client accepts - order here is honored by OpenSSH
+HostKeyAlgorithms ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ssh-rsa,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521,ecdsa-sha2-nistp384,ecdsa-sha2-nistp256
+
+#Disable ProxyJump for jumphosts themselves
+Host ${TACC_JUMP_HOST} ${MCS_JUMP_HOST} ${CELS_JUMP_HOST}
+    ProxyJump none
+
+# TACC domains
+Host *.chameleon.tacc.utexas.edu chameleon*.tacc.utexas.edu *.tacc.chameleoncloud.org
+  User $TACC_USER
+  IdentityFile ${TACC_SSH_ID}
+  ProxyJump $TACC_USER@$TACC_JUMP_HOST
+
+# UC domains on MCS
 Host *.uc.chameleoncloud.org
   User $UC_USER
-  ProxyCommand ssh -qW %h:%p $ANL_USER@$anl_jump_host
+  IdentityFile ${UC_SSH_ID}
+  ProxyJump $MCS_USER@$MCS_JUMP_HOST
 
-# Nimbus
-Host *.mcs.anl.gov !$anl_jump_host
-  User $ANL_USER
-  ProxyCommand ssh -qW %h:%p $ANL_USER@$anl_jump_host
+# MCS at ANL
+Host *.mcs.anl.gov
+  User $MCS_USER
+  IdentityFile ${MCS_SSH_ID}
+  ProxyJump $MCS_USER@$MCS_JUMP_HOST
 
-# Northwestern sites
+# GCE on CELS at ANL
+Host *.cels.anl.gov
+  User $CELS_USER
+  IdentityFile ${CELS_SSH_ID}
+  ProxyJump $CELS_USER@$CELS_JUMP_HOST
+
+# Northwestern
 Host *.northwestern.edu
   User $NU_USER
+  IdentityFile ${NU_SSH_ID}
+
 SSH_CONFIG
 
 cleanup() {

@@ -85,6 +85,16 @@ chameleon_password() {
 export -f chameleon_password
 ```
 
+**Using Bitwarden**
+
+```
+chameleon_password() {
+  $(bw get password chameleon --raw)
+}
+# Important: export for sub-shells
+export -f chameleon_password
+```
+
 In order to log in to the various nodes, sometimes it's necessary to log in as
 various different user names. This can be controlled via the following env
 variables:

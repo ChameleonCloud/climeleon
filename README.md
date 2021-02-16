@@ -24,12 +24,34 @@ make
 
 The scripts need to use your credentials in order to call the OpenStack API. The
 value of the `CHAMELEON_USER` environment variable will be used as your Chameleon
-username, so ensure it is set:
+username, so ensure it is set. You can include it in your .bashrc, or place it into a
+separate file and source it. For example:
 
-```shell
+```bash
+# File named .cc.env
+#! /bin/sh
 export CHAMELEON_USER=my_cham_user
 # Or, e.g., for users using Globus auth
 export CHAMELEON_USER=my_email_address@example.com
+# export CHAMELEON_SSH_ID="~/.ssh/id_chameleon" # Defaults to id_rsa if not set
+
+# export TACC_USER="<username>" # Defaults to $USER
+# export TACC_SSH_ID="<path/to/id>" # Defaults to $CHAMELEON_SSH_ID
+# export TACC_JUMP_HOST="<fqdn of jump host>" # Defaults to staff.chameleon.tacc.utexas.edu
+
+# export UC_USER="<user@uchicago.edu>"
+# export UC_SSH_ID="<path/to/id>" # Defaults to $CHAMELEON_SSH_ID
+
+# export MCS_USER="<user@uchicago.edu>"
+# export MCS_SSH_ID="<path/to/id>" # Defaults to $CHAMELEON_SSH_ID
+# export MCS_JUMP_HOST="<fqdn of jump host>" # Defaults to login.mcs.anl.gov
+
+# export CELS_USER="<user@uchicago.edu>"
+# export CELS_SSH_ID="<path/to/id>" # Defaults to $CHAMELEON_SSH_ID
+# export CELS_JUMP_HOST="<fqdn of jump host>" # Defaults to logins.cels.anl.gov
+
+# export NU_USER="<username>" # Defaults to $USER
+# export NU_SSH_ID="<path/to/id>" # Defaults to $CHAMELEON_SSH_ID
 ```
 
 The scripts additionally look for a function in your shell called `chameleon_password`,

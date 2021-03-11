@@ -7,7 +7,7 @@ set -e -u -o pipefail
 lease=""
 node=""
 
-while [[ $# -gt 0 ]]; do 
+while [[ $# -gt 0 ]]; do
   key="$1"
   case "$1" in
     -l|--lease)
@@ -34,15 +34,21 @@ all leases and their reserved nodes are printed.
 
 Examples:
   # Print all node allocations for all leases
-  lease-nodes 
+  lease-nodes
 
   # Print just node allocations for lease
   lease-nodes --lease 6eb43c19-e1ab-492d-b0f0-ece1e4fa75f2
 
   # Print just node allocations for node
-  lease-nodes --node b634778d-9540-48bc-9ed6-cb02943f6459 
+  lease-nodes --node b634778d-9540-48bc-9ed6-cb02943f6459
 USAGE
 fi
+
+echo "This command is deprecated! Please use this instead: "
+echo "  chameleon lease resource list <LEASE_ID>"
+echo ""
+echo "As punishment, you must now wait 5 seconds, sorry..."
+sleep 5
 
 hosts=$(blazar host-list -f json \
   | jq 'map({"key": .id, "value": .hypervisor_hostname}) | from_entries')
@@ -57,7 +63,7 @@ fi
 
 out=$(
   blazar host-allocation-list -f json \
-    | jq -r --argjson hosts "$hosts" "$filter | 
+    | jq -r --argjson hosts "$hosts" "$filter |
       map(. as \$parent |
         .reservations[].lease_id + \"\\t\" +
         \$hosts[\$parent.resource_id] + \"\\t\" +

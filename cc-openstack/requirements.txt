@@ -1,4 +1,5 @@
 crudini
+doniclient
 gnocchiclient
 osc-placement
 python-cinderclient

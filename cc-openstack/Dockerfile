@@ -5,7 +5,7 @@ FROM centos:8 as base
 # to the runtime image. This is to avoid having to keep the build dependencies
 # for the python modules that require a build step.
 FROM base as builder
-ARG openstack_release=rocky
+ARG openstack_release=train
 
 RUN dnf group install -y "Development Tools" \
   && dnf install -y openssl-devel python3-devel

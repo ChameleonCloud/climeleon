@@ -1,4 +1,4 @@
-doniclient
+doniclient~=0.1.2
 gnocchiclient
 osc-placement
 python-cinderclient

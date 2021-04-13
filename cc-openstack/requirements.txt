@@ -1,4 +1,3 @@
-crudini
 doniclient
 gnocchiclient
 osc-placement

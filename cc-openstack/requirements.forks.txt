@@ -1,2 +1,4 @@
 -e git+https://github.com/ChameleonCloud/python-blazarclient@chameleoncloud/stable/train#egg=python-blazarclient
 -e git+https://github.com/ChameleonCloud/python-heatclient@stable/rocky#egg=python-heatclient
+python-chi>=0.10.0,<1.0.0
+python-chi-operator>=0.4.1

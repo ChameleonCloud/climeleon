@@ -6,40 +6,45 @@ FROM centos:8 as base
 # for the python modules that require a build step.
 FROM base as builder
 ARG openstack_release=train
+RUN --mount=type=cache,target=/var/cache/dnf dnf install -y \
+  gcc \
+  git \
+  libffi-devel \
+  libxml2-devel \
+  libxslt-devel \
+  make \
+  openssl-devel \
+  openssl-devel \
+  python3-devel 
 
-RUN dnf group install -y "Development Tools" \
-  && dnf install -y openssl-devel python3-devel
-# RUN dnf install -y \
-#   build-base curl git linux-headers libffi-dev libxml2-dev libxslt-dev \
-#   openssl-dev python-dev
 
-RUN mkdir -p /var/lib/cc
-RUN python3 -m venv /var/lib/cc/venv
+# "activate" virtualenv by adding to path
+ENV VIRTUAL_ENV=/var/lib/cc/venv
+RUN mkdir -p /var/lib/cc && python3 -m venv "${VIRTUAL_ENV}"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY requirements.txt /requirements.txt
-COPY requirements.forks.txt /requirements.forks.txt
-RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstack/requirements/stable/${openstack_release}/upper-constraints.txt" \
-  && source /var/lib/cc/venv/bin/activate \
-  && pip install --upgrade pip \
-  && pip install -r requirements.txt -c upper-constraints.txt \
-  && pip install -r requirements.forks.txt
+# Update python tools
+RUN pip3 install --upgrade pip setuptools wheel
 
-# Install Chameleon libraries. These are in a separate layer because
-# they change way more often than the base requirements, and it's wasteful
-# to invalidate the previous layer all the time, as it's expensive.
-RUN source /var/lib/cc/venv/bin/activate && \
-  pip install \
-  "python-chi>=0.10.0,<1.0.0" \
-  "python-chi-operator>=0.4.1"
+# Add requirements
+COPY requirements.txt requirements.forks.txt /
+RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstack/requirements/stable/${openstack_release}/upper-constraints.txt"
+
+RUN mkdir -p /wheels/
+# Install requirements
+RUN --mount=type=cache,target=/root/.cache/pip \
+  pip wheel -w /wheels/ -c upper-constraints.txt -r requirements.txt && \
+  pip wheel -w /wheels/ -r requirements.forks.txt
 
 # Runtime image
 FROM base
 
 # Install runtime libraries needed for wheels
-RUN dnf install -y \
+RUN --mount=type=cache,target=/var/cache/dnf dnf install -y \
   bash \
   bc \
   curl \
+  git \
   jq \
   libffi \
   libxml2 \
@@ -52,7 +57,19 @@ RUN dnf install -y \
 VOLUME ["/host"]
 WORKDIR /host
 
-COPY --from=builder /var/lib/cc/venv /var/lib/cc/venv
+COPY --from=builder /wheels/ /wheels/
+
+# "activate" virtualenv by adding to path
+ENV VIRTUAL_ENV=/var/lib/cc/venv
+RUN mkdir -p /var/lib/cc && python3 -m venv "${VIRTUAL_ENV}"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+COPY requirements.txt requirements.forks.txt ./
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+  pip3 install --upgrade pip setuptools wheel && \
+  pip install --find-links /wheels/ \
+  -r requirements.txt \
+  -r requirements.forks.txt
 
 COPY clouds2rc /usr/local/bin/
 COPY scripts/* /usr/local/bin/

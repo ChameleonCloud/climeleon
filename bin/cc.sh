@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e -u -o pipefail
 
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+
 registry="docker.chameleoncloud.org"
 
 cloud="${1:-}"
@@ -24,6 +26,15 @@ USAGE
   exit 1
 }
 shift # Past 'cloud' positional arg
+
+
+# Don't leave variable empty
+CHAMELEON_USER="${CHAMELEON_USER:-default}"
+if [ "$CHAMELEON_USER" = "default" ] ; then
+  echo "Please set CHAMELEON_USER to your Chameleon Username"
+  exit 1
+fi
+
 
 password="$(chameleon_password "$cloud")"
 if [ -z "$password" ]; then

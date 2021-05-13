@@ -1,2 +1,3 @@
--e git+https://github.com/ChameleonCloud/python-blazarclient@chameleoncloud/stable/train#egg=python-blazarclient
--e git+https://github.com/ChameleonCloud/python-heatclient@stable/rocky#egg=python-heatclient
+git+https://github.com/ChameleonCloud/python-blazarclient@chameleoncloud/stable/train#egg=python-blazarclient
+git+https://github.com/ChameleonCloud/python-heatclient@stable/rocky#egg=python-heatclient
+python-swiftclient==3.11.1 

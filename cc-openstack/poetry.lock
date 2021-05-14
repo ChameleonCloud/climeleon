@@ -7,6 +7,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "atomicwrites"
+version = "1.4.0"
+description = "Atomic file writes."
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
 name = "attrs"
 version = "21.2.0"
 description = "Classes Without Boilerplate"
@@ -238,17 +246,17 @@ stevedore = ">=3.0.0"
 
 [[package]]
 name = "doniclient"
-version = "0.1.4"
-description = ""
+version = "0.2.0"
+description = "This is a plugin for the openstack commandline client, to enable support for the Doni hardware inventory project"
 category = "main"
 optional = false
 python-versions = ">=3.6.2,<4.0.0"
 
 [package.dependencies]
-keystoneauth1 = "*"
-osc-lib = ">=1.14.1,<2.0.0"
-python-dateutil = ">=2.8.0,<3.0.0"
-python-openstackclient = {version = ">=4.0.2,<5.0.0", extras = ["cli"]}
+keystoneauth1 = "<=3.17.3"
+osc-lib = "<=1.14.1"
+python-dateutil = "<=2.8.0"
+python-openstackclient = {version = "<=4.0.2", extras = ["cli"]}
 
 [[package]]
 name = "fabric"
@@ -358,6 +366,14 @@ docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [[package]]
+name = "iniconfig"
+version = "1.1.1"
+description = "iniconfig: brain-dead simple config-ini parsing"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "iniparse"
 version = "0.5"
 description = "Accessing and Modifying INI files"
@@ -431,11 +447,11 @@ format_nongpl = ["idna", "jsonpointer (>1.13)", "webcolors", "rfc3986-validator 
 
 [[package]]
 name = "keystoneauth1"
-version = "4.3.1"
+version = "3.17.3"
 description = "Authentication Library for OpenStack Identity"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
 iso8601 = ">=0.1.11"
@@ -449,8 +465,8 @@ stevedore = ">=1.20.0"
 betamax = ["betamax (>=0.7.0)", "fixtures (>=3.0.0)", "mock (>=2.0.0)"]
 kerberos = ["requests-kerberos (>=0.8.0)"]
 oauth1 = ["oauthlib (>=0.6.2)"]
-saml2 = ["lxml (>=4.2.0)"]
-test = ["PyYAML (>=3.12)", "bandit (>=1.1.0,<1.6.0)", "betamax (>=0.7.0)", "coverage (>=4.0,!=4.4)", "fixtures (>=3.0.0)", "flake8-docstrings (==0.2.1.post1)", "flake8-import-order (>=0.17.1)", "hacking (>=3.0.1,<3.1.0)", "lxml (>=4.2.0)", "oauthlib (>=0.6.2)", "oslo.config (>=5.2.0)", "oslo.utils (>=3.33.0)", "oslotest (>=3.2.0)", "pycodestyle (>=2.0.0,<2.6.0)", "reno (>=3.1.0)", "requests-kerberos (>=0.8.0)", "requests-mock (>=1.2.0)", "stestr (>=1.0.0)", "testresources (>=2.0.0)", "testtools (>=2.2.0)"]
+saml2 = ["lxml (>=3.4.1,!=3.7.0)"]
+test = ["PyYAML (>=3.12)", "bandit (>=1.1.0,<1.6.0)", "betamax (>=0.7.0)", "coverage (>=4.0,!=4.4)", "fixtures (>=3.0.0)", "flake8-docstrings (==0.2.1.post1)", "flake8-import-order (>=0.17.1)", "hacking (>=0.12.0,!=0.13.0,<0.14)", "lxml (>=3.4.1,!=3.7.0)", "mock (>=2.0.0)", "oauthlib (>=0.6.2)", "openstackdocstheme (>=1.18.1)", "oslo.config (>=5.2.0)", "oslo.utils (>=3.33.0)", "oslotest (>=3.2.0)", "reno (>=2.5.0)", "requests-kerberos (>=0.8.0)", "requests-mock (>=1.2.0)", "stestr (>=1.0.0)", "testresources (>=2.0.0)", "testtools (>=2.2.0)"]
 
 [[package]]
 name = "lxml"
@@ -534,28 +550,28 @@ python-versions = "*"
 
 [[package]]
 name = "openstacksdk"
-version = "0.56.0"
+version = "0.36.5"
 description = "An SDK for building applications to work with OpenStack"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
 appdirs = ">=1.3.0"
-cryptography = ">=2.7"
-decorator = ">=4.4.1"
-"dogpile.cache" = ">=0.6.5"
-importlib-metadata = {version = ">=1.7.0", markers = "python_version < \"3.8\""}
+cryptography = ">=2.1"
+decorator = ">=3.4.0"
+"dogpile.cache" = ">=0.6.2"
 iso8601 = ">=0.1.11"
 jmespath = ">=0.9.0"
 jsonpatch = ">=1.16,<1.20 || >1.20"
-keystoneauth1 = ">=3.18.0"
+keystoneauth1 = ">=3.16.0"
 munch = ">=2.1.0"
 netifaces = ">=0.10.4"
 os-service-types = ">=1.7.0"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
-PyYAML = ">=3.13"
+PyYAML = ">=3.12"
 requestsexceptions = ">=1.2.0"
+six = ">=1.10.0"
 
 [[package]]
 name = "os-client-config"
@@ -581,7 +597,7 @@ pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 
 [[package]]
 name = "osc-lib"
-version = "1.15.0"
+version = "1.14.1"
 description = "OpenStackClient Library"
 category = "main"
 optional = false
@@ -776,12 +792,34 @@ optional = false
 python-versions = ">=2.6"
 
 [[package]]
+name = "pluggy"
+version = "0.13.1"
+description = "plugin and hook calling mechanisms for python"
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
+
+[package.extras]
+dev = ["pre-commit", "tox"]
+
+[[package]]
 name = "prettytable"
 version = "0.7.2"
 description = "A simple Python library for easily displaying tabular data in a visually appealing ASCII table format."
 category = "main"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "py"
+version = "1.10.0"
+description = "library with cross-python path, ini-parsing, io, code, log facilities"
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "pycodestyle"
@@ -899,6 +937,28 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
+name = "pytest"
+version = "6.2.4"
+description = "pytest: simple powerful testing with Python"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+atomicwrites = {version = ">=1.0", markers = "sys_platform == \"win32\""}
+attrs = ">=19.2.0"
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
+iniconfig = "*"
+packaging = "*"
+pluggy = ">=0.12,<1.0.0a1"
+py = ">=1.8.2"
+toml = "*"
+
+[package.extras]
+testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
+
+[[package]]
 name = "python-blazarclient"
 version = "2.2.2.dev11"
 description = "Client for OpenStack Reservation Service"
@@ -986,11 +1046,11 @@ six = ">=1.10.0"
 
 [[package]]
 name = "python-dateutil"
-version = "2.8.1"
+version = "2.8.0"
 description = "Extensions to the standard Python datetime module"
 category = "main"
 optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [package.dependencies]
 six = ">=1.5"
@@ -1389,12 +1449,16 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "151de0cfda3cbe43b3ecd4c3d913017ef1ef0d0b1589654d0908d96dc3abd773"
+content-hash = "be5477a203266837780a4bf1019db9f2a47e614a93c9e5b3b8a9489752a4af4d"
 
 [metadata.files]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
+]
+atomicwrites = [
+    {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
+    {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
 ]
 attrs = [
     {file = "attrs-21.2.0-py2.py3-none-any.whl", hash = "sha256:149e90d6d8ac20db7a955ad60cf0e6881a3f20d37096140088356da6c716b0b1"},
@@ -1519,8 +1583,8 @@ decorator = [
     {file = "dogpile.cache-1.1.2.tar.gz", hash = "sha256:2134464672a3deb7ef1366a8691726686d8c62540e4208f1a40c9aaa1a0b6a45"},
 ]
 doniclient = [
-    {file = "doniclient-0.1.4-py3-none-any.whl", hash = "sha256:6337dbe4faecbca0aa6a2881115f52d1440b7529a5034f7ac754ddb2801a7898"},
-    {file = "doniclient-0.1.4.tar.gz", hash = "sha256:e0330ae4c0d775a07b6af527e1603877ad86c7eca66c93dab074912724043a54"},
+    {file = "doniclient-0.2.0-py3-none-any.whl", hash = "sha256:a67caab5de012f344a03e66e24c5faa709bd5ae52e63d9517982b63366fc35ff"},
+    {file = "doniclient-0.2.0.tar.gz", hash = "sha256:72d328061601e7aed0aa75ea922e7ceb565bfdf87a7192947d9ea11d58ea47e3"},
 ]
 fabric = [
     {file = "fabric-2.6.0-py2.py3-none-any.whl", hash = "sha256:7a71714b8b8f28cf828eceb155196f43ebac1bd4c849b7161ed5993d1cbcaa40"},
@@ -1549,6 +1613,10 @@ importlib-metadata = [
 importlib-resources = [
     {file = "importlib_resources-5.1.3-py3-none-any.whl", hash = "sha256:3b9c774e0e7e8d9c069eb2fe6aee7e9ae71759a381dec02eb45249fba7f38713"},
     {file = "importlib_resources-5.1.3.tar.gz", hash = "sha256:0786b216556e53b34156263ab654406e543a8b0d9b1381019e25a36a09263c36"},
+]
+iniconfig = [
+    {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
+    {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 iniparse = [
     {file = "iniparse-0.5-py2-none-any.whl", hash = "sha256:88ca60473b1637055a937933d48840be1b1b6835f381a6158ef118a532583675"},
@@ -1581,8 +1649,8 @@ jsonschema = [
     {file = "jsonschema-3.2.0.tar.gz", hash = "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"},
 ]
 keystoneauth1 = [
-    {file = "keystoneauth1-4.3.1-py3-none-any.whl", hash = "sha256:c4a80b79bc3e0412eb127fa761e80912614f8563646ca34b62bcd9d533f93077"},
-    {file = "keystoneauth1-4.3.1.tar.gz", hash = "sha256:93605430a6d1424f31659bc5685e9dc1be9a6254e88c99f00cffc0a60c648a64"},
+    {file = "keystoneauth1-3.17.3-py2.py3-none-any.whl", hash = "sha256:027674dbe8dc483e19109eed2b6f6dac5a0e687c91dde6d7e704180300fed12d"},
+    {file = "keystoneauth1-3.17.3.tar.gz", hash = "sha256:bc5eef389daba1a0b881ea5c83ccb47604370a25aacba34fdc967cdf224c621b"},
 ]
 lxml = [
     {file = "lxml-4.6.3-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:df7c53783a46febb0e70f6b05df2ba104610f2fb0d27023409734a3ecbb78fb2"},
@@ -1696,8 +1764,8 @@ netifaces = [
     {file = "netifaces-0.10.9.tar.gz", hash = "sha256:2dee9ffdd16292878336a58d04a20f0ffe95555465fee7c9bd23b3490ef2abf3"},
 ]
 openstacksdk = [
-    {file = "openstacksdk-0.56.0-py3-none-any.whl", hash = "sha256:3480a15f8e17fe7536d02525da6ead98b7529d4a3211c138b5cfea8e3880e407"},
-    {file = "openstacksdk-0.56.0.tar.gz", hash = "sha256:9c7633746a5603ef059f95f33d5aa8116066204de65b572c877a8c31120ef65b"},
+    {file = "openstacksdk-0.36.5-py2.py3-none-any.whl", hash = "sha256:3e06b6b2e07e195e5b9a905a9c3c0b067e361340f0b225c96d019117a5598622"},
+    {file = "openstacksdk-0.36.5.tar.gz", hash = "sha256:9c2c35552c33d205191ed244cc1e5edf633396aa16cde6ced65654ff065ed167"},
 ]
 os-client-config = [
     {file = "os-client-config-2.1.0.tar.gz", hash = "sha256:abc38a351f8c006d34f7ee5f3f648de5e3ecf6455cc5d76cfd889d291cdf3f4e"},
@@ -1708,8 +1776,8 @@ os-service-types = [
     {file = "os_service_types-1.7.0-py2.py3-none-any.whl", hash = "sha256:0505c72205690910077fb72b88f2a1f07533c8d39f2fe75b29583481764965d6"},
 ]
 osc-lib = [
-    {file = "osc-lib-1.15.0.tar.gz", hash = "sha256:a0a470f5f8f7c562a18719ffc2a9f0d98859b1666e920d93c99fbc32441797a5"},
-    {file = "osc_lib-1.15.0-py2.py3-none-any.whl", hash = "sha256:1a20d3a23d1c986d6ceb85a46580cc1a2b0fa365acfcbf08da604995b3aedeec"},
+    {file = "osc-lib-1.14.1.tar.gz", hash = "sha256:3467a1edf62946f1b67724fa7f9c699b5e31d80b111ed9e4c7aec21633a3e30d"},
+    {file = "osc_lib-1.14.1-py2.py3-none-any.whl", hash = "sha256:be2e258cdaf4c3e8ac92384772784bd29e3b5552570635171f938fa0932f95ba"},
 ]
 osc-placement = [
     {file = "osc-placement-1.7.0.tar.gz", hash = "sha256:68ac7dc7c58982a3b0cf625108e1d74092c01ec38a25769270074bc8093dcac1"},
@@ -1759,10 +1827,18 @@ pbr = [
     {file = "pbr-5.6.0-py2.py3-none-any.whl", hash = "sha256:c68c661ac5cc81058ac94247278eeda6d2e6aecb3e227b0387c30d277e7ef8d4"},
     {file = "pbr-5.6.0.tar.gz", hash = "sha256:42df03e7797b796625b1029c0400279c7c34fd7df24a7d7818a1abb5b38710dd"},
 ]
+pluggy = [
+    {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
+    {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
+]
 prettytable = [
     {file = "prettytable-0.7.2.tar.bz2", hash = "sha256:853c116513625c738dc3ce1aee148b5b5757a86727e67eff6502c7ca59d43c36"},
     {file = "prettytable-0.7.2.tar.gz", hash = "sha256:2d5460dc9db74a32bcc8f9f67de68b2c4f4d2f01fa3bd518764c69156d9cacd9"},
     {file = "prettytable-0.7.2.zip", hash = "sha256:a53da3b43d7a5c229b5e3ca2892ef982c46b7923b51e98f0db49956531211c4f"},
+]
+py = [
+    {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
+    {file = "py-1.10.0.tar.gz", hash = "sha256:21b81bda15b66ef5e1a777a21c4dcd9c20ad3efd0b3f817e7a809035269e1bd3"},
 ]
 pycodestyle = [
     {file = "pycodestyle-2.7.0-py2.py3-none-any.whl", hash = "sha256:514f76d918fcc0b55c6680472f0a37970994e07bbb80725808c17089be302068"},
@@ -1826,6 +1902,10 @@ pyreadline3 = [
 pyrsistent = [
     {file = "pyrsistent-0.17.3.tar.gz", hash = "sha256:2e636185d9eb976a18a8a8e96efce62f2905fea90041958d8cc2a189756ebf3e"},
 ]
+pytest = [
+    {file = "pytest-6.2.4-py3-none-any.whl", hash = "sha256:91ef2131a9bd6be8f76f1f08eac5c5317221d6ad1e143ae03894b862e8976890"},
+    {file = "pytest-6.2.4.tar.gz", hash = "sha256:50bcad0a0b9c5a72c8e4e7c9855a3ad496ca6a881a3641b4260605450772c54b"},
+]
 python-blazarclient = []
 python-chi = [
     {file = "python-chi-0.9.0.tar.gz", hash = "sha256:2a99facdaef2620f6f84d52f4ca5270c46e68e406e6e441658454dc1340fa1b5"},
@@ -1839,8 +1919,8 @@ python-cinderclient = [
     {file = "python_cinderclient-5.0.2-py2.py3-none-any.whl", hash = "sha256:895e79be709d476d168e6966491aeb2587606f16af67592eedfa59c3be25d9c3"},
 ]
 python-dateutil = [
-    {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
-    {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
+    {file = "python-dateutil-2.8.0.tar.gz", hash = "sha256:c89805f6f4d64db21ed966fda138f8a5ed7a4fdbc1a8ee329ce1b74e3c74da9e"},
+    {file = "python_dateutil-2.8.0-py2.py3-none-any.whl", hash = "sha256:7e6584c74aeed623791615e26efd690f29817a27c73085b78e4bad02493df2fb"},
 ]
 python-dracclient = [
     {file = "python-dracclient-5.1.0.tar.gz", hash = "sha256:bdc78910df3f634238c1dcdfa3a352b5a3d8d0f8b0819d73b6e42879abdbc88f"},

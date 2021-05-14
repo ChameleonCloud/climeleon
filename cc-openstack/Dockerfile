@@ -21,7 +21,8 @@ RUN --mount=type=cache,target=$XDG_CACHE_HOME \
   poetry config virtualenvs.create false && \
   poetry install --no-interaction
 
-COPY clouds2rc scripts/* /usr/local/bin/
+COPY clouds2rc /usr/local/bin/
+COPY scripts/* /usr/local/bin/
 COPY clouds*.yaml /etc/openstack/
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

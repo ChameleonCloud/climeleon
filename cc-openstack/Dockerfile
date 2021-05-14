@@ -6,6 +6,7 @@ ENV XDG_CACHE_HOME="/tmp/.cache/"
 RUN --mount=type=cache,target=$XDG_CACHE_HOME \
   apt update && apt install -f -y \
     gcc make \
+    git \
     jq
 
 RUN --mount=type=cache,target=$XDG_CACHE_HOME \

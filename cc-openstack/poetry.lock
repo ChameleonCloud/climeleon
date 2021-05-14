@@ -206,16 +206,17 @@ stevedore = ">=3.0.0"
 
 [[package]]
 name = "doniclient"
-version = "0.1.3"
-description = "This is a plugin for the openstack commandline client, to enable support for the Doni hardware inventory project"
+version = "0.1.4"
+description = ""
 category = "main"
 optional = false
 python-versions = ">=3.6.2,<4.0.0"
 
 [package.dependencies]
-osc-lib = ">=2.3,<3.0"
+keystoneauth1 = "*"
+osc-lib = ">=1.14.1,<2.0.0"
 python-dateutil = ">=2.8.0,<3.0.0"
-python-openstackclient = {version = ">=5.5.0,<6.0.0", extras = ["cli"]}
+python-openstackclient = {version = ">=4.0.2,<5.0.0", extras = ["cli"]}
 
 [[package]]
 name = "fabric"
@@ -248,7 +249,7 @@ six = ">=1.10.0"
 
 [[package]]
 name = "gnocchiclient"
-version = "7.0.7"
+version = "7.0.5"
 description = "Python client library for Gnocchi"
 category = "main"
 optional = false
@@ -518,29 +519,31 @@ pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 
 [[package]]
 name = "osc-lib"
-version = "2.4.0"
+version = "1.15.0"
 description = "OpenStackClient Library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
-cliff = ">=3.2.0"
-keystoneauth1 = ">=3.14.0"
+Babel = ">=2.3.4,<2.4.0 || >2.4.0"
+cliff = ">=2.8.0,<2.9.0 || >2.9.0"
+keystoneauth1 = ">=3.7.0"
 openstacksdk = ">=0.15.0"
 "oslo.i18n" = ">=3.15.3"
 "oslo.utils" = ">=3.33.0"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 simplejson = ">=3.5.1"
+six = ">=1.10.0"
 stevedore = ">=1.20.0"
 
 [[package]]
 name = "osc-placement"
-version = "2.2.0"
+version = "1.7.0"
 description = "OpenStackClient plugin for the Placement service"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
 keystoneauth1 = ">=3.3.0"
@@ -800,11 +803,12 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "python-blazarclient"
-version = "3.2.0"
+version = "2.2.2.dev11"
 description = "Client for OpenStack Reservation Service"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
+develop = false
 
 [package.dependencies]
 Babel = ">=2.3.4,<2.4.0 || >2.4.0"
@@ -814,11 +818,18 @@ keystoneauth1 = ">=3.4.0"
 "oslo.log" = ">=3.36.0"
 "oslo.utils" = ">=3.33.0"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
-PrettyTable = ">=0.7.1"
+PrettyTable = ">=0.7.1,<0.8"
+six = ">=1.10.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/ChameleonCloud/python-blazarclient"
+reference = "chameleoncloud/stable/train"
+resolved_reference = "32075a049c8ca32d2f8ba073f1ec4ed166b740d7"
 
 [[package]]
 name = "python-chi"
-version = "0.10.1"
+version = "0.9.0"
 description = "Helper library for Chameleon Infrastructure (CHI) testbed"
 category = "main"
 optional = false
@@ -838,7 +849,7 @@ python-novaclient = "*"
 
 [[package]]
 name = "python-chi-operator"
-version = "0.4.1"
+version = "0.3.0"
 description = "Operator library for Chameleon"
 category = "main"
 optional = false
@@ -849,7 +860,7 @@ click = "*"
 click-spinner = "*"
 crudini = "*"
 python-blazarclient = "*"
-python-chi = ">=0.10.0"
+python-chi = ">=0.7.2"
 python-dateutil = "*"
 python-dracclient = "*"
 python-ironicclient = "*"
@@ -859,21 +870,22 @@ tabulate = "*"
 
 [[package]]
 name = "python-cinderclient"
-version = "7.4.0"
+version = "5.0.2"
 description = "OpenStack Block Storage API Client Library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
-keystoneauth1 = ">=4.3.1"
-"oslo.i18n" = ">=5.0.1"
-"oslo.utils" = ">=4.8.0"
-pbr = ">=5.5.0"
-PrettyTable = ">=0.7.2"
-requests = ">=2.25.1"
+Babel = ">=2.3.4,<2.4.0 || >2.4.0"
+keystoneauth1 = ">=3.4.0"
+"oslo.i18n" = ">=3.15.3"
+"oslo.utils" = ">=3.33.0"
+pbr = ">=2.0.0,<2.1.0 || >2.1.0"
+PrettyTable = ">=0.7.1,<0.8"
+requests = ">=2.14.2,<2.20.0 || >2.20.0"
 simplejson = ">=3.5.1"
-stevedore = ">=3.3.0"
+six = ">=1.10.0"
 
 [[package]]
 name = "python-dateutil"
@@ -888,7 +900,7 @@ six = ">=1.5"
 
 [[package]]
 name = "python-dracclient"
-version = "6.0.0"
+version = "5.1.0"
 description = "Library for managing machines with Dell iDRAC cards"
 category = "main"
 optional = false
@@ -901,11 +913,11 @@ requests = ">=2.10.0"
 
 [[package]]
 name = "python-glanceclient"
-version = "3.3.0"
+version = "2.17.1"
 description = "OpenStack Image API Client Library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
 keystoneauth1 = ">=3.6.2"
@@ -915,66 +927,75 @@ pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 PrettyTable = ">=0.7.1,<0.8"
 pyOpenSSL = ">=17.1.0"
 requests = ">=2.14.2"
+six = ">=1.10.0"
 warlock = ">=1.2.0,<2"
 wrapt = ">=1.7.0"
 
 [[package]]
 name = "python-heatclient"
-version = "2.3.0"
+version = "1.16.2.dev8"
 description = "OpenStack Orchestration API Client Library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
+develop = false
 
 [package.dependencies]
 Babel = ">=2.3.4,<2.4.0 || >2.4.0"
 cliff = ">=2.8.0,<2.9.0 || >2.9.0"
 iso8601 = ">=0.1.11"
 keystoneauth1 = ">=3.4.0"
-osc-lib = ">=1.14.0"
+osc-lib = ">=1.8.0"
 "oslo.i18n" = ">=3.15.3"
 "oslo.serialization" = ">=2.18.0,<2.19.1 || >2.19.1"
 "oslo.utils" = ">=3.33.0"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 PrettyTable = ">=0.7.2,<0.8"
 python-swiftclient = ">=3.2.0"
-PyYAML = ">=3.13"
+PyYAML = ">=3.12"
 requests = ">=2.14.2"
 six = ">=1.10.0"
 
+[package.source]
+type = "git"
+url = "https://github.com/ChameleonCloud/python-heatclient"
+reference = "stable/rocky"
+resolved_reference = "b1329af1056da3a49e6422c10bba624a891c416c"
+
 [[package]]
 name = "python-ironicclient"
-version = "4.6.1"
+version = "3.1.2"
 description = "OpenStack Bare Metal Provisioning API Client Library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
 appdirs = ">=1.3.0"
-cliff = ">=2.8.0,<2.9.0 || >2.9.0"
-"dogpile.cache" = ">=0.8.0"
-jsonschema = ">=3.2.0"
+"dogpile.cache" = ">=0.6.2"
+jsonschema = ">=2.6.0"
 keystoneauth1 = ">=3.4.0"
-openstacksdk = ">=0.18.0"
-osc-lib = ">=2.0.0"
+osc-lib = ">=1.10.0"
+"oslo.config" = ">=5.2.0"
+"oslo.i18n" = ">=3.15.3"
+"oslo.serialization" = ">=2.18.0,<2.19.1 || >2.19.1"
 "oslo.utils" = ">=3.33.0"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
-PyYAML = ">=3.13"
+PyYAML = ">=3.12"
 requests = ">=2.14.2"
-stevedore = ">=1.20.0"
+six = ">=1.10.0"
 
 [package.extras]
 cli = ["python-openstackclient (>=3.12.0)"]
-test = ["coverage (>=4.0,!=4.4)", "ddt (>=1.0.1)", "fixtures (>=3.0.0)", "oslotest (>=3.2.0)", "python-openstackclient (>=3.12.0)", "requests-mock (>=1.2.0)", "stestr (>=1.0.0)", "tempest (>=17.1.0)", "testtools (>=2.2.0)"]
+test = ["hacking (>=1.0.0,<1.1.0)", "coverage (>=4.0,!=4.4)", "doc8 (>=0.6.0)", "fixtures (>=3.0.0)", "requests-mock (>=1.2.0)", "mock (>=2.0.0)", "Babel (>=2.3.4,!=2.4.0)", "oslotest (>=3.2.0)", "testtools (>=2.2.0)", "tempest (>=17.1.0)", "stestr (>=1.0.0)", "ddt (>=1.0.1)", "python-openstackclient (>=3.12.0)"]
 
 [[package]]
 name = "python-keystoneclient"
-version = "4.2.0"
+version = "3.21.0"
 description = "Client Library for OpenStack Identity"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
 debtcollector = ">=1.2.0"
@@ -990,20 +1011,21 @@ stevedore = ">=1.20.0"
 
 [[package]]
 name = "python-neutronclient"
-version = "7.3.0"
+version = "6.14.1"
 description = "CLI and Client Library for OpenStack Networking"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
-cliff = ">=3.4.0"
+Babel = ">=2.3.4,<2.4.0 || >2.4.0"
+cliff = ">=2.8.0,<2.9.0 || >2.9.0"
 debtcollector = ">=1.2.0"
 iso8601 = ">=0.1.11"
 keystoneauth1 = ">=3.4.0"
 netaddr = ">=0.7.18"
 os-client-config = ">=1.28.0"
-osc-lib = ">=1.12.0"
+osc-lib = ">=1.8.0"
 "oslo.i18n" = ">=3.15.3"
 "oslo.log" = ">=3.36.0"
 "oslo.serialization" = ">=2.18.0,<2.19.1 || >2.19.1"
@@ -1012,49 +1034,54 @@ pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 python-keystoneclient = ">=3.8.0"
 requests = ">=2.14.2"
 simplejson = ">=3.5.1"
+six = ">=1.10.0"
 
 [[package]]
 name = "python-novaclient"
-version = "17.4.0"
+version = "15.1.1"
 description = "Client library for OpenStack Compute API"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
+Babel = ">=2.3.4,<2.4.0 || >2.4.0"
 iso8601 = ">=0.1.11"
 keystoneauth1 = ">=3.5.0"
 "oslo.i18n" = ">=3.15.3"
 "oslo.serialization" = ">=2.18.0,<2.19.1 || >2.19.1"
 "oslo.utils" = ">=3.33.0"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
-PrettyTable = ">=0.7.2"
-stevedore = ">=2.0.1"
+PrettyTable = ">=0.7.2,<0.8"
+simplejson = ">=3.5.1"
+six = ">=1.10.0"
 
 [[package]]
 name = "python-openstackclient"
-version = "5.5.0"
+version = "4.0.2"
 description = "OpenStack Command-line Client"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
-cliff = ">=3.5.0"
-iso8601 = ">=0.1.11"
-openstacksdk = ">=0.53.0"
-osc-lib = ">=2.3.0"
+Babel = ">=2.3.4,<2.4.0 || >2.4.0"
+cliff = ">=2.8.0,<2.9.0 || >2.9.0"
+keystoneauth1 = ">=3.6.2"
+openstacksdk = ">=0.17.0"
+osc-lib = ">=1.14.0"
 "oslo.i18n" = ">=3.15.3"
 "oslo.utils" = ">=3.33.0"
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 python-cinderclient = ">=3.3.0"
-python-keystoneclient = ">=3.22.0"
-python-novaclient = ">=17.0.0"
-stevedore = ">=2.0.1"
+python-glanceclient = ">=2.8.0"
+python-keystoneclient = ">=3.17.0"
+python-novaclient = ">=15.0.0"
+six = ">=1.10.0"
 
 [[package]]
 name = "python-swiftclient"
-version = "3.11.1"
+version = "3.8.1"
 description = "OpenStack Object Storage API Client Library"
 category = "main"
 optional = false
@@ -1066,7 +1093,7 @@ six = ">=1.9.0"
 
 [package.extras]
 keystone = ["python-keystoneclient (>=0.7.0)"]
-test = ["coverage (>=4.0,!=4.4)", "keystoneauth1 (>=3.4.0)", "mock (>=1.2.0)", "openstacksdk (>=0.11.0)", "stestr (>=2.0.0,!=3.0.0)", "hacking (>=1.1.0,<1.2.0)", "hacking (>=3.2.0,<3.3.0)"]
+test = ["hacking (>=1.1.0,<1.2.0)", "coverage (>=4.0,!=4.4)", "keystoneauth1 (>=3.4.0)", "mock (>=1.2.0)", "stestr (>=2.0.0)"]
 
 [[package]]
 name = "pytz"
@@ -1233,7 +1260,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "0e68d3cced54ae7a03d3a5c47e84aef2bb64d957dffc6f293c98740ac30fe251"
+content-hash = "bcb0162f136cbbc08289f48463372e5556739837a819b3bc31bec704e4c83674"
 
 [metadata.files]
 appdirs = [
@@ -1355,8 +1382,8 @@ decorator = [
     {file = "dogpile.cache-1.1.2.tar.gz", hash = "sha256:2134464672a3deb7ef1366a8691726686d8c62540e4208f1a40c9aaa1a0b6a45"},
 ]
 doniclient = [
-    {file = "doniclient-0.1.3-py3-none-any.whl", hash = "sha256:17fe495fce196122096c7a76a1306181e4b2321dda15cafbd1bcff5700c56c7f"},
-    {file = "doniclient-0.1.3.tar.gz", hash = "sha256:485586bf69cd8fb9a9d5ae7dcfbe06b21361cd96628f1e8caaaf392463a896d6"},
+    {file = "doniclient-0.1.4-py3-none-any.whl", hash = "sha256:6337dbe4faecbca0aa6a2881115f52d1440b7529a5034f7ac754ddb2801a7898"},
+    {file = "doniclient-0.1.4.tar.gz", hash = "sha256:e0330ae4c0d775a07b6af527e1603877ad86c7eca66c93dab074912724043a54"},
 ]
 fabric = [
     {file = "fabric-2.6.0-py2.py3-none-any.whl", hash = "sha256:7a71714b8b8f28cf828eceb155196f43ebac1bd4c849b7161ed5993d1cbcaa40"},
@@ -1367,8 +1394,8 @@ futurist = [
     {file = "futurist-2.3.0.tar.gz", hash = "sha256:174ea146adf303d7e5d7d6d34e3a01f4abf0382b03a6f9309bac2e2d54ffbed6"},
 ]
 gnocchiclient = [
-    {file = "gnocchiclient-7.0.7-py2.py3-none-any.whl", hash = "sha256:07bcab47950a6796045eb0690a24e04a9bdf9e57c5877715bdf74546a2344e65"},
-    {file = "gnocchiclient-7.0.7.tar.gz", hash = "sha256:e24014d9556878bfe96fbf27c2b567d5b787658949c0ccb658820ed94e87deee"},
+    {file = "gnocchiclient-7.0.5-py2.py3-none-any.whl", hash = "sha256:a240d46c95bcd78a33fef23b2ec802d4b2ac8cc8a19e4bffead3dbd333c3ac6d"},
+    {file = "gnocchiclient-7.0.5.tar.gz", hash = "sha256:5f7ee6222953d73675f76b9976681a798662aaffcb05811fd5fa0f43f6e599bf"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -1532,12 +1559,12 @@ os-service-types = [
     {file = "os_service_types-1.7.0-py2.py3-none-any.whl", hash = "sha256:0505c72205690910077fb72b88f2a1f07533c8d39f2fe75b29583481764965d6"},
 ]
 osc-lib = [
-    {file = "osc-lib-2.4.0.tar.gz", hash = "sha256:47029225c19a053a063736da390446debb5f14224dc60e92df7ca1b694625a9f"},
-    {file = "osc_lib-2.4.0-py3-none-any.whl", hash = "sha256:94faf037494ca5ebe17ec50ea06d97890bd47f7d7f30553c657cb66b0e6fd1ce"},
+    {file = "osc-lib-1.15.0.tar.gz", hash = "sha256:a0a470f5f8f7c562a18719ffc2a9f0d98859b1666e920d93c99fbc32441797a5"},
+    {file = "osc_lib-1.15.0-py2.py3-none-any.whl", hash = "sha256:1a20d3a23d1c986d6ceb85a46580cc1a2b0fa365acfcbf08da604995b3aedeec"},
 ]
 osc-placement = [
-    {file = "osc-placement-2.2.0.tar.gz", hash = "sha256:ed933dae950c596ebe8fd2ad878b3eaa521a1ca80a138db34a792dfebd8135c3"},
-    {file = "osc_placement-2.2.0-py3-none-any.whl", hash = "sha256:74005aba1d3f5eed3596d5c02114f5520bd98bb5b82bfa974fdd46d70cb1841e"},
+    {file = "osc-placement-1.7.0.tar.gz", hash = "sha256:68ac7dc7c58982a3b0cf625108e1d74092c01ec38a25769270074bc8093dcac1"},
+    {file = "osc_placement-1.7.0-py2.py3-none-any.whl", hash = "sha256:fd6b867af2f0cd37ef8fe1e96c75d98c102ab14f0dbd5ddd5b32f6a1551246b0"},
 ]
 "oslo.config" = [
     {file = "oslo.config-8.7.0-py3-none-any.whl", hash = "sha256:5b1b9439bfb76e0091172aee77b509144f22e08127ddee4d10a7eb5407740b07"},
@@ -1634,60 +1661,54 @@ pyreadline3 = [
 pyrsistent = [
     {file = "pyrsistent-0.17.3.tar.gz", hash = "sha256:2e636185d9eb976a18a8a8e96efce62f2905fea90041958d8cc2a189756ebf3e"},
 ]
-python-blazarclient = [
-    {file = "python-blazarclient-3.2.0.tar.gz", hash = "sha256:e75ee4db3ac48b024fbbed4a9062c0e99125c55f646075a1238b50de9069b344"},
-    {file = "python_blazarclient-3.2.0-py3-none-any.whl", hash = "sha256:ea703b22280334580b49f16e359309b0135c3e7fbcc65d7231ae502cdadc9c95"},
-]
+python-blazarclient = []
 python-chi = [
-    {file = "python-chi-0.10.1.tar.gz", hash = "sha256:39dd671603a577c865eb3e16e1da451b1b2770b25fe80cb782ea5fc286830168"},
+    {file = "python-chi-0.9.0.tar.gz", hash = "sha256:2a99facdaef2620f6f84d52f4ca5270c46e68e406e6e441658454dc1340fa1b5"},
 ]
 python-chi-operator = [
-    {file = "python-chi-operator-0.4.1.tar.gz", hash = "sha256:a09b5923c207b706b8d6391c473987a0157bbbc85dc099f2fb842208e30ae5ce"},
-    {file = "python_chi_operator-0.4.1-py3-none-any.whl", hash = "sha256:bdd759880635b7cc4368e7507f649c3a7cea5fe7660352ea1b8ca1c47f4977bd"},
+    {file = "python-chi-operator-0.3.0.tar.gz", hash = "sha256:24d08d6921e8498062ce01c2bf3ad3886a0c82dc831f267196c1559da47f7607"},
+    {file = "python_chi_operator-0.3.0-py3-none-any.whl", hash = "sha256:a2134a3950097f423c258ffd8bc2a0ea4eb9ca47ecb0e0ad91a6da94fa1ece81"},
 ]
 python-cinderclient = [
-    {file = "python-cinderclient-7.4.0.tar.gz", hash = "sha256:dec1998badfcf3af0a1bf47bbafd3a4f3415c18e1f9fbeceab77737da99b7c28"},
-    {file = "python_cinderclient-7.4.0-py3-none-any.whl", hash = "sha256:7d127f5b5d1795b04b0322b4263302d613577d3bb69822b65a6c2fd14164d2fe"},
+    {file = "python-cinderclient-5.0.2.tar.gz", hash = "sha256:4fa0822cdf9eae8ee2c4a5c6625a17ad36205ace8fee2fa02d2229f86a0aeb94"},
+    {file = "python_cinderclient-5.0.2-py2.py3-none-any.whl", hash = "sha256:895e79be709d476d168e6966491aeb2587606f16af67592eedfa59c3be25d9c3"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
 ]
 python-dracclient = [
-    {file = "python-dracclient-6.0.0.tar.gz", hash = "sha256:943a679a5f9322ea551b376a3fad5506db338ff5be23d0a38a7b9efb54c3d81f"},
-    {file = "python_dracclient-6.0.0-py3-none-any.whl", hash = "sha256:6704b4b42a7fedf30834a9fb19efc60ef1fa4bb56318cc0afb4b20d9b616b30f"},
+    {file = "python-dracclient-5.1.0.tar.gz", hash = "sha256:bdc78910df3f634238c1dcdfa3a352b5a3d8d0f8b0819d73b6e42879abdbc88f"},
+    {file = "python_dracclient-5.1.0-py3-none-any.whl", hash = "sha256:076b6b67fb44a3f89c6b2b96c05baa8d042816deb3b929a732d194fb35afaa68"},
 ]
 python-glanceclient = [
-    {file = "python-glanceclient-3.3.0.tar.gz", hash = "sha256:8dfb31dad2d08885e2354bba6cec29bf271f65feffb925658b312d5af0fc2af5"},
-    {file = "python_glanceclient-3.3.0-py3-none-any.whl", hash = "sha256:b9505dfbb207daea06e7f03c340292b87bd32d21a23bf88b8ed2eef36fd3d60f"},
+    {file = "python-glanceclient-2.17.1.tar.gz", hash = "sha256:342ae26f9be89fef5929384843b8f0601dd1149a618329774b846cb3540fac8e"},
+    {file = "python_glanceclient-2.17.1-py2.py3-none-any.whl", hash = "sha256:e537fc6e17b5bae6ed9fa296544882d0131b92e6a676f03d14309851839096f0"},
 ]
-python-heatclient = [
-    {file = "python-heatclient-2.3.0.tar.gz", hash = "sha256:d6fe15e610523f96e1ee26e84e9d5fd06846a3fa72d352c38f1fc79abe7eb44a"},
-    {file = "python_heatclient-2.3.0-py3-none-any.whl", hash = "sha256:5ec937777d13f628af3d1694fa275ada7657e1c8175356d7b24ab4be65f6c852"},
-]
+python-heatclient = []
 python-ironicclient = [
-    {file = "python-ironicclient-4.6.1.tar.gz", hash = "sha256:46cb713250a17e47be63207665d7478ddb60e88d94c108804863540bb31592d2"},
-    {file = "python_ironicclient-4.6.1-py3-none-any.whl", hash = "sha256:4d7f766bf5158f1be23ea2139c8fe1715082ae60117f86acc98f65fc469bdc00"},
+    {file = "python-ironicclient-3.1.2.tar.gz", hash = "sha256:d184eeba7e3ef5528171608408a3f59f36c0fbaf1929ba9c3ca5a8b0dc473571"},
+    {file = "python_ironicclient-3.1.2-py2.py3-none-any.whl", hash = "sha256:0b81bd49d136132a0f8619ddf8aafb8828a9431ffde8bf573107d6699149e2b1"},
 ]
 python-keystoneclient = [
-    {file = "python-keystoneclient-4.2.0.tar.gz", hash = "sha256:0248426e483b95de395086482c077d48e45990d3b1a3e334b2ec8b2e108f5a8a"},
-    {file = "python_keystoneclient-4.2.0-py3-none-any.whl", hash = "sha256:5702f387e2a3f3645459a0850ef3e92bc8fc0eb36bd2f8ba1004a50dfed1e5f4"},
+    {file = "python-keystoneclient-3.21.0.tar.gz", hash = "sha256:1a34aa80bc65bbe9b3beb24df317e773d98a270cdd53a307fd5c00cfa833ea0e"},
+    {file = "python_keystoneclient-3.21.0-py2.py3-none-any.whl", hash = "sha256:0825eed18fb854b0bd106b45adff227ee01d0315462b1e66c63278e878e35c87"},
 ]
 python-neutronclient = [
-    {file = "python-neutronclient-7.3.0.tar.gz", hash = "sha256:41b9a4bab8ebb2428f926cd1f7077df6c1d997f384e48aa0cbec049b8b54536c"},
-    {file = "python_neutronclient-7.3.0-py3-none-any.whl", hash = "sha256:5f02bfc5a2f9f738b2d70d82ec70d78de3b7695c33ee6c4ee8cae406b57f8464"},
+    {file = "python-neutronclient-6.14.1.tar.gz", hash = "sha256:c53c5b9a1df8b2bc0fef949c40752a5030cdb2f6aa435464c454e2dca5f0f531"},
+    {file = "python_neutronclient-6.14.1-py2.py3-none-any.whl", hash = "sha256:af9a81a9ea6d673a0b8d87a6114b835d13abddaad8c43ec5b050fe1e9f350e91"},
 ]
 python-novaclient = [
-    {file = "python-novaclient-17.4.0.tar.gz", hash = "sha256:bca1a3899c0ecf0f63a9b3e97c5d56557186bece1e2a585b26d7c5727d461822"},
-    {file = "python_novaclient-17.4.0-py3-none-any.whl", hash = "sha256:47c33f896d72ce7229d82c9aa77db2dda89543688494a2d0b9d7c9815878af7b"},
+    {file = "python-novaclient-15.1.1.tar.gz", hash = "sha256:2d7e3d26ca5e14cdef79a8c6cbf4890d3fb1a83d64f1dedc6f15b56eb9077289"},
+    {file = "python_novaclient-15.1.1-py2.py3-none-any.whl", hash = "sha256:2e7bb7a033b068e756e0ee70454887c6e17fa588bd17eef8ec5fd13ad9199966"},
 ]
 python-openstackclient = [
-    {file = "python-openstackclient-5.5.0.tar.gz", hash = "sha256:8d40491374172f9375ce1642ac2230b1cbb5a564320edbcc2a9ebe857fd9a880"},
-    {file = "python_openstackclient-5.5.0-py3-none-any.whl", hash = "sha256:ad13fffb5caf5b85f477940cc9f90bdf4648faf6cc3821a5e4622caa82aa6289"},
+    {file = "python-openstackclient-4.0.2.tar.gz", hash = "sha256:b82edfe707988fe3b0eefc125f8775394289dc50e604f6a2aa814e535e4a764a"},
+    {file = "python_openstackclient-4.0.2-py2.py3-none-any.whl", hash = "sha256:06f728711b3f19582637b7227656d0a4d330d2a67cabd586be56f9f4713a97c0"},
 ]
 python-swiftclient = [
-    {file = "python-swiftclient-3.11.1.tar.gz", hash = "sha256:06919d59676d3e215f4da4f3f930d71880dda3528289842b25199509df712411"},
-    {file = "python_swiftclient-3.11.1-py2.py3-none-any.whl", hash = "sha256:eb53bf614eb276896002884c9cf5c2bbdff56da49e9e343df088d180baf8c685"},
+    {file = "python-swiftclient-3.8.1.tar.gz", hash = "sha256:3a013303643f77a99befa05582dfb93671e1fba1aed9f4a517418129700aedb8"},
+    {file = "python_swiftclient-3.8.1-py2.py3-none-any.whl", hash = "sha256:0b460f6a2c16d474dd2a85674162a04e14f40a21d9ef0197172fb5c5cc0bc5d5"},
 ]
 pytz = [
     {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},

@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "cc-openstack"
+version = "0.1.0"
+description = "Bundle openstack-cli and chameleon tools"
+authors = ["Michael Sherman <shermanm@uchicago.edu>"]
+
+[tool.poetry.dependencies]
+python = "^3.6.2"
+doniclient = "^"
+gnocchiclient = "^"
+osc-placement = "^"
+python-cinderclient = "^"
+python-dracclient = "^"
+python-glanceclient = "^"
+python-ironicclient = "^"
+python-keystoneclient = "^"
+python-neutronclient = "^"
+python-novaclient = "^"
+python-openstackclient = "^"
+python-swiftclient = "^"
+python-blazarclient = "^"
+python-heatclient = "^"
+python-chi = "^"
+python-chi-operator = "^"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

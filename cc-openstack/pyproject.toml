@@ -6,7 +6,7 @@ authors = ["Michael Sherman <shermanm@uchicago.edu>"]
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
-doniclient = "^0.2.4"
+doniclient = "^0.2.5"
 gnocchiclient = "<=7.0.5"
 osc-placement = "<=1.7.0"
 python-cinderclient = "<=5.0.2"
@@ -20,6 +20,8 @@ python-openstackclient = "<=4.0.2"
 python-swiftclient = "<=3.8.1"
 python-blazarclient = {git = "https://github.com/ChameleonCloud/python-blazarclient", rev = "chameleoncloud/stable/train"}
 python-heatclient = {git = "https://github.com/ChameleonCloud/python-heatclient", rev = "stable/rocky"}
+python-zunclient = {git = "https://github.com/openstack/python-zunclient", rev = "stable/ussuri"}
+
 python-chi = "^0.9.0"
 python-chi-operator = "^0.3.0"
 

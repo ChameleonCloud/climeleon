@@ -108,6 +108,7 @@ clouds:
       auth_url: https://kvm.tacc.chameleoncloud.org:5000/v3
       client_id: keystone-kvm-prod
       project_name: openstack
+      project_domain_name: default
   kvm_system:
     cloud: chameleon_system
     auth:

@@ -113,3 +113,23 @@ clouds:
     cloud: chameleon_system
     auth:
       auth_url: https://kvm.tacc.chameleoncloud.org:5000/v3
+
+  edge:
+    cloud: chameleon
+    auth:
+      auth_url: https://chi.edge.chameleoncloud.org:5000/v3
+      client_id: keystone-edge-prod
+    region_name: CHI@Edge
+  edge_admin:
+    cloud: chameleon
+    auth:
+      auth_url: https://chi.edge.chameleoncloud.org:5000/v3
+      client_id: keystone-edge-prod
+      project_name: openstack
+      project_domain_name: default
+    region_name: CHI@Edge
+  edge_system:
+    cloud: chameleon_system
+    auth:
+      auth_url: https://chi.edge.chameleoncloud.org:5000/v3
+    region_name: CHI@Edge

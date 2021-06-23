@@ -1,4 +1,4 @@
-doniclient~=0.2.4
+doniclient~=0.2.5
 gnocchiclient
 osc-placement
 python-cinderclient
@@ -9,4 +9,3 @@ python-keystoneclient
 python-neutronclient
 python-novaclient
 python-openstackclient
-python-zunclient

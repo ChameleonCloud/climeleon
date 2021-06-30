@@ -2,6 +2,7 @@ doniclient~=0.2.5
 gnocchiclient
 osc-placement
 python-cinderclient
+python-cyborgclient
 python-dracclient
 python-glanceclient
 python-ironicclient

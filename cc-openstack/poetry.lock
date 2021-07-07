@@ -950,7 +950,7 @@ resolved_reference = "0fd341693274f6d5bfe1e634bf499ab8ff227f09"
 
 [[package]]
 name = "python-chi"
-version = "0.9.1"
+version = "0.13.0"
 description = "Helper library for Chameleon Infrastructure (CHI) testbed"
 category = "main"
 optional = false
@@ -967,10 +967,11 @@ python-glanceclient = "*"
 python-ironicclient = "*"
 python-neutronclient = "*"
 python-novaclient = "*"
+python-zunclient = "*"
 
 [[package]]
 name = "python-chi-operator"
-version = "0.3.0"
+version = "0.4.1"
 description = "Operator library for Chameleon"
 category = "main"
 optional = false
@@ -981,7 +982,7 @@ click = "*"
 click-spinner = "*"
 crudini = "*"
 python-blazarclient = "*"
-python-chi = ">=0.7.2"
+python-chi = ">=0.10.0"
 python-dateutil = "*"
 python-dracclient = "*"
 python-ironicclient = "*"
@@ -1007,6 +1008,30 @@ PrettyTable = ">=0.7.1,<0.8"
 requests = ">=2.14.2,<2.20.0 || >2.20.0"
 simplejson = ">=3.5.1"
 six = ">=1.10.0"
+
+[[package]]
+name = "python-cyborgclient"
+version = "1.3.0"
+description = "Python client for cyborg API"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+cryptography = ">=2.7"
+decorator = ">=3.4.0"
+keystoneauth1 = ">=3.3.0"
+openstacksdk = ">=0.42.0"
+os-client-config = ">=1.28.0"
+osc-lib = ">=1.14.0"
+"oslo.i18n" = ">=3.15.3"
+"oslo.log" = ">=3.36.0"
+"oslo.serialization" = ">=2.18.0,<2.19.1 || >2.19.1"
+"oslo.utils" = ">=3.33.0"
+pbr = ">=2.0.0,<2.1.0 || >2.1.0"
+PrettyTable = ">=0.7.1,<0.8"
+requests = ">=2.14.2"
+stevedore = ">=1.20.0"
 
 [[package]]
 name = "python-dateutil"
@@ -1457,7 +1482,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "daf6eeeadef2897e07138d649286652ca4b7009469c328af7490776d8ddd4326"
+content-hash = "94cce9ff78b3b14b693f5678de8a05acf8041a812a2dc21d773d048f19a84cdd"
 
 [metadata.files]
 appdirs = [
@@ -1950,15 +1975,19 @@ pyrsistent = [
 ]
 python-blazarclient = []
 python-chi = [
-    {file = "python-chi-0.9.1.tar.gz", hash = "sha256:2d24e7abf61883b354a09b5c8c3d0f2c625508c351e1e937e27a69179eb27b1c"},
+    {file = "python-chi-0.13.0.tar.gz", hash = "sha256:4ffdbdfde71781324c98f912875043b4568ad9fdf7adc74025c15374f04ee663"},
 ]
 python-chi-operator = [
-    {file = "python-chi-operator-0.3.0.tar.gz", hash = "sha256:24d08d6921e8498062ce01c2bf3ad3886a0c82dc831f267196c1559da47f7607"},
-    {file = "python_chi_operator-0.3.0-py3-none-any.whl", hash = "sha256:a2134a3950097f423c258ffd8bc2a0ea4eb9ca47ecb0e0ad91a6da94fa1ece81"},
+    {file = "python-chi-operator-0.4.1.tar.gz", hash = "sha256:a09b5923c207b706b8d6391c473987a0157bbbc85dc099f2fb842208e30ae5ce"},
+    {file = "python_chi_operator-0.4.1-py3-none-any.whl", hash = "sha256:bdd759880635b7cc4368e7507f649c3a7cea5fe7660352ea1b8ca1c47f4977bd"},
 ]
 python-cinderclient = [
     {file = "python-cinderclient-5.0.2.tar.gz", hash = "sha256:4fa0822cdf9eae8ee2c4a5c6625a17ad36205ace8fee2fa02d2229f86a0aeb94"},
     {file = "python_cinderclient-5.0.2-py2.py3-none-any.whl", hash = "sha256:895e79be709d476d168e6966491aeb2587606f16af67592eedfa59c3be25d9c3"},
+]
+python-cyborgclient = [
+    {file = "python-cyborgclient-1.3.0.tar.gz", hash = "sha256:404c64bb6f248a504bba44b7a0466b65ee0e71d00f3e15170780c9a19c24d252"},
+    {file = "python_cyborgclient-1.3.0-py3-none-any.whl", hash = "sha256:a929e18a90a847857442746d305079b4f620ca1c4d0408f737b30b5f18bb854b"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.0.tar.gz", hash = "sha256:c89805f6f4d64db21ed966fda138f8a5ed7a4fdbc1a8ee329ce1b74e3c74da9e"},

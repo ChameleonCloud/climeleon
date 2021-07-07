@@ -1,12 +1,12 @@
 clouds:
   tacc:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://chi.tacc.chameleoncloud.org:5000/v3
       client_id: keystone-tacc-prod
     region_name: CHI@TACC
   tacc_admin:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://chi.tacc.chameleoncloud.org:5000/v3
       client_id: keystone-tacc-prod
@@ -14,18 +14,18 @@ clouds:
       project_domain_name: default
     region_name: CHI@TACC
   tacc_system:
-    cloud: chameleon_system
+    profile: chameleon_system
     auth:
       auth_url: https://chi.tacc.chameleoncloud.org:5000/v3
     region_name: CHI@TACC
   tacc_dev:
-    cloud: chameleon_dev
+    profile: chameleon_dev
     auth:
       auth_url: https://dev.tacc.chameleoncloud.org:5000/v3
       client_id: keystone-tacc-dev
     region_name: CHI_DEV
   tacc_dev_admin:
-    cloud: chameleon_dev
+    profile: chameleon_dev
     auth:
       auth_url: https://dev.tacc.chameleoncloud.org:5000/v3
       client_id: keystone-tacc-dev
@@ -33,19 +33,19 @@ clouds:
       project_domain_name: default
     region_name: CHI_DEV
   tacc_dev_system:
-    cloud: chameleon_system
+    profile: chameleon_system
     auth:
       auth_url: https://chi.tacc.chameleoncloud.org:5000/v3
     region_name: CHI_DEV
 
   uc:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://chi.uc.chameleoncloud.org:5000/v3
       client_id: keystone-uc-prod
     region_name: CHI@UC
   uc_admin:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://chi.uc.chameleoncloud.org:5000/v3
       client_id: keystone-uc-prod
@@ -53,18 +53,18 @@ clouds:
       project_domain_name: default
     region_name: CHI@UC
   uc_system:
-    cloud: chameleon_system
+    profile: chameleon_system
     auth:
       auth_url: https://chi.uc.chameleoncloud.org:5000/v3
     region_name: CHI@UC
   uc_dev:
-    cloud: chameleon_dev
+    profile: chameleon_dev
     auth:
       auth_url: https://dev.uc.chameleoncloud.org:5000/v3
       client_id: keystone-uc-dev
     region_name: CHI_DEV_UC
   uc_dev_admin:
-    cloud: chameleon_dev
+    profile: chameleon_dev
     auth:
       auth_url: https://dev.uc.chameleoncloud.org:5000/v3
       client_id: keystone-uc-dev
@@ -72,19 +72,19 @@ clouds:
       project_domain_name: default
     region_name: CHI_DEV_UC
   uc_dev_system:
-    cloud: chameleon_system
+    profile: chameleon_system
     auth:
       auth_url: https://dev.uc.chameleoncloud.org:5000/v3
     region_name: CHI_DEV_UC
 
   nu:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://sl-ciab.northwestern.edu:5000/v3
       client_id: keystone-nu
     region_name: CHI@NU
   nu_admin:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://sl-ciab.northwestern.edu:5000/v3
       client_id: keystone-nu
@@ -92,36 +92,36 @@ clouds:
       project_domain_name: default
     region_name: CHI@NU
   nu_system:
-    cloud: chameleon_system
+    profile: chameleon_system
     auth:
       auth_url: https://sl-ciab.northwestern.edu:5000/v3
     region_name: CHI@NU
 
   kvm:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://kvm.tacc.chameleoncloud.org:5000/v3
       client_id: keystone-kvm-prod
   kvm_admin:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://kvm.tacc.chameleoncloud.org:5000/v3
       client_id: keystone-kvm-prod
       project_name: openstack
       project_domain_name: default
   kvm_system:
-    cloud: chameleon_system
+    profile: chameleon_system
     auth:
       auth_url: https://kvm.tacc.chameleoncloud.org:5000/v3
 
   edge:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://chi.edge.chameleoncloud.org:5000/v3
       client_id: keystone-edge-prod
     region_name: CHI@Edge
   edge_admin:
-    cloud: chameleon
+    profile: chameleon
     auth:
       auth_url: https://chi.edge.chameleoncloud.org:5000/v3
       client_id: keystone-edge-prod
@@ -129,7 +129,7 @@ clouds:
       project_domain_name: default
     region_name: CHI@Edge
   edge_system:
-    cloud: chameleon_system
+    profile: chameleon_system
     auth:
       auth_url: https://chi.edge.chameleoncloud.org:5000/v3
     region_name: CHI@Edge

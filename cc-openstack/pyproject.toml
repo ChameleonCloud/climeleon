@@ -26,6 +26,8 @@ python-zunclient = {git = "https://github.com/openstack/python-zunclient", rev =
 
 python-chi = "^0.13.0"
 python-chi-operator = "^0.4.1"
+osc-lib = "^2.4.1"
+"oslo.utils" = "<4.9.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.5b2"

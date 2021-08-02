@@ -56,7 +56,6 @@ COPY --from=builder /var/lib/cc/venv /var/lib/cc/venv
 
 COPY clouds2rc /usr/local/bin/
 COPY scripts/* /usr/local/bin/
-COPY clouds*.yaml /etc/openstack/
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

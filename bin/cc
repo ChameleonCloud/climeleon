@@ -112,12 +112,17 @@ done
 
 # If a clouds.yaml is provided, use it
 # Else, OpenStack's default clouds.yaml will be used
-if [[ "${CHAMELEON_CONFIG:-unset}" != "unset" && -f "$CHAMELEON_CONFIG" ]]; then
-  docker_options+=(-v "$CHAMELEON_CONFIG:/etc/openstack/clouds.yaml")
-  CHAMELEON_PUBLIC_CONFIG="${CHAMELEON_CONFIG%.*}-public.${CHAMELEON_CONFIG##*.}"
-  if [ -f "$CHAMELEON_PUBLIC_CONFIG" ]; then
-    docker_options+=(-v "$CHAMELEON_PUBLIC_CONFIG:/etc/openstack/clouds-public.yaml")
-  fi
+# All valid configs will mounted in /etc/openstack/clouds.d/ in cc-openstack
+if [ "${CHAMELEON_CONFIG+null}" == "null" ]; then
+  i=0
+  for config in $CHAMELEON_CONFIG; do
+    docker_options+=(-v "$config:/etc/openstack/clouds.d/clouds""$i"".yaml")
+    public_config="${config%.*}-public.${config##*.}"
+    if [ -f "$public_config" ]; then
+      docker_options+=(-v "$public_config:/etc/openstack/clouds.d/clouds""$i""-public.yaml")
+    fi
+    i=$((i+1))
+  done
 fi
 
 docker_options+=(-v "$PWD:/host")

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 export VIRTUAL_ENV_DISABLE_PROMPT=1
-source /var/lib/cc/venv/bin/activate
+source /var/lib/chi/venv/bin/activate
 
 if [ -d /etc/openstack/clouds.d/ ]; then
   cloud-config-merge $(echo /etc/openstack/clouds.d/clouds*.yaml)

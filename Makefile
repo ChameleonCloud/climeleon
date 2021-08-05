@@ -1,7 +1,7 @@
-CC_INSTALL_PATH ?= /usr/local/bin
+CHI_INSTALL_PATH ?= /usr/local/bin
 DOCKER_REGISTRY ?= docker.chameleoncloud.org
 
-CONTAINERS := cc-docs cc-openstack
+CONTAINERS := chi-docs chi-openstack
 
 .PHONY: all
 all: build install
@@ -14,9 +14,9 @@ publish: $(CONTAINERS:%=%-publish)
 
 .PHONY: install
 install:
-	@ ln -sf $(CURDIR)/bin/* $(CC_INSTALL_PATH)
-	@ echo "Installed to $(CC_INSTALL_PATH)."
-	@ echo "Set CC_INSTALL_PATH to overwrite this."
+	@ ln -sf $(CURDIR)/bin/* $(CHI_INSTALL_PATH)
+	@ echo "Installed to $(CHI_INSTALL_PATH)."
+	@ echo "Set CHI_INSTALL_PATH to overwrite this."
 
 # Tool builds
 STAMPS := .stamps

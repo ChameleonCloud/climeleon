@@ -39,8 +39,8 @@ fi
 
 for host in "${host_tour[@]}"; do
   echo "Updating key on $host"
-  "$DIR/cc-ssh" ssh "$host" mkdir -p .ssh
-  "$DIR/cc-ssh" scp "$key" "${host}:.ssh/authorized_keys"
+  "$DIR/chi-ssh" ssh "$host" mkdir -p .ssh
+  "$DIR/chi-ssh" scp "$key" "${host}:.ssh/authorized_keys"
 done
 
 echo "All done!"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# cc-ssh - Chameleon ssh wrapper
+# chi-ssh - Chameleon ssh wrapper
 #
 # Provides a wrapper around ssh/scp with some specific use-cases
 # for accessing Chameleon hosts.

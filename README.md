@@ -2,7 +2,7 @@
 
 _CLI interface(s) for Chameleon operators._
 
-This provides a new tool called `cc` that can make some operational tasks
+This provides a new tool called `chi` that can make some operational tasks
 easier, namely through:
 
   - Reducing the overhead required to ssh/scp on to specific machines
@@ -13,7 +13,7 @@ easier, namely through:
 ## Setup
 
 You can build the Docker container(s) necessary and install some symlinks to
-/usr/local/bin (configurable with CC_INSTALL_PATH env variable) by running the
+/usr/local/bin (configurable with CHI_INSTALL_PATH env variable) by running the
 default `make` task.
 
 ```
@@ -28,7 +28,7 @@ username, so ensure it is set. You can include it in your .bashrc, or place it i
 separate file and source it. For example:
 
 ```bash
-# File named .cc.env
+# File named .chi.env
 #! /bin/sh
 export CHAMELEON_USER=my_cham_user
 # Or, e.g., for users using Globus auth
@@ -131,7 +131,7 @@ browser window trip.
 
 ```
 # Find doc pages referencing baremetal nodes
-cc docs search "baremetal"
+chi docs search "baremetal"
 ```
 
 ### `replacekey`
@@ -146,7 +146,7 @@ you yet and you'll have to fall back to password authentication.
 ```
 # Note: this will replace all your existing public keys on the servers with the
 # key you provide!
-cc replacekey "/path/to/public/key"
+chi replacekey "/path/to/public/key"
 ```
 
 ### `ssh`/`scp`
@@ -156,50 +156,50 @@ connections via login nodes for you.
 
 ```
 # Log in to a TACC node
-cc ssh chameleon01.tacc.utexas.edu
+chi ssh chameleon01.tacc.utexas.edu
 
 # Log in to a UC node
-cc ssh admin01.uc.chameleoncloud.org
+chi ssh admin01.uc.chameleoncloud.org
 
 # Log in to an internal-only node
 # (Notice the use of -t to allocate a pseudo-tty)
-cc ssh -t master2.chameleon.tacc.utexas.edu sudo ssh m01-03
+chi ssh -t master2.chameleon.tacc.utexas.edu sudo ssh m01-03
 
 # Also works with SCP
-cc scp my-script.sh admin01.uc.chameleoncloud.org:
+chi scp my-script.sh admin01.uc.chameleoncloud.org:
 
 # Copy file between two sites (use -3 flag)
-cc scp -3 admin01.uc.chameleoncloud.org:my-script.sh master2.chameleon.tacc.utexas.edu:
+chi scp -3 admin01.uc.chameleoncloud.org:my-script.sh master2.chameleon.tacc.utexas.edu:
 ```
 
 It is also possible to download the SSH config that makes this utility work, in
 case you want to install it permanently.
 
 ```
-cc ssh config >>~/.ssh/config
+chi ssh config >>~/.ssh/config
 ```
 
 ### `openstack` (and legacy OpenStack clients)
 
 > **Note**: requires Docker.
 
-The default behavior of `cc` is to select a cloud configuration for you and then
+The default behavior of `chi` is to select a cloud configuration for you and then
 go on to running whatever command you wanted. This is accomplished via a Docker
 container that has all of the dependencies already baked in.
 
 ```
 # Run an `openstack` command against CHI@TACC
-cc tacc openstack project list
+chi tacc openstack project list
 
 # Run a `blazar` command against CHI@UC
-cc uc blazar host-list
+chi uc blazar host-list
 ```
 
 You can also spawn an interactive shell that has access to all of these
 commands:
 
 ```
-cc uc
+chi uc
 ```
 
 ### `vault`
@@ -208,14 +208,14 @@ This is a helper to interface with the Nimbus team vault hosted in MCS.
 
 ```
 # Log in to the Vault (logins should persist for a bit)
-cc vault login
+chi vault login
 
 # Search for a particular password, in this case "zenodo"
-cc vault search zenodo
+chi vault search zenodo
 
 # Read a password
-cc vault read <path>
+chi vault read <path>
 
 # Update a password
-cc vault write <path> value=<value>
+chi vault write <path> value=<value>
 ```

@@ -13,13 +13,13 @@ RUN dnf group install -y "Development Tools" \
 #   build-base curl git linux-headers libffi-dev libxml2-dev libxslt-dev \
 #   openssl-dev python-dev
 
-RUN mkdir -p /var/lib/cc
-RUN python3 -m venv /var/lib/cc/venv
+RUN mkdir -p /var/lib/chi
+RUN python3 -m venv /var/lib/chi/venv
 
 COPY requirements.txt /requirements.txt
 COPY requirements.forks.txt /requirements.forks.txt
 RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstack/requirements/stable/${openstack_release}/upper-constraints.txt" \
-  && source /var/lib/cc/venv/bin/activate \
+  && source /var/lib/chi/venv/bin/activate \
   && pip install --upgrade pip \
   && pip install -r requirements.txt -c upper-constraints.txt \
   && pip install -r requirements.forks.txt
@@ -27,7 +27,7 @@ RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstac
 # Install Chameleon libraries. These are in a separate layer because
 # they change way more often than the base requirements, and it's wasteful
 # to invalidate the previous layer all the time, as it's expensive.
-RUN source /var/lib/cc/venv/bin/activate && \
+RUN source /var/lib/chi/venv/bin/activate && \
   pip install \
   "python-chi>=0.10.0,<1.0.0" \
   "python-chi-operator>=0.4.1"
@@ -52,7 +52,7 @@ RUN dnf install -y \
 VOLUME ["/host"]
 WORKDIR /host
 
-COPY --from=builder /var/lib/cc/venv /var/lib/cc/venv
+COPY --from=builder /var/lib/chi/venv /var/lib/chi/venv
 
 COPY clouds2rc /usr/local/bin/
 COPY scripts/* /usr/local/bin/

@@ -54,7 +54,7 @@ def main(config_paths: List[str]) -> int:
                 config_list = raw_public_configs
             else:
                 config_list = raw_configs
-            config_list.append(yaml.load(f.read(), Loader=yaml.Loader))
+            config_list.append(yaml.safe_load(f.read()))
 
     # If we have loaded valid configs, here we will merge them and write
     # the merged configs to disk

@@ -1,0 +1,77 @@
+#!/bin/env python
+import os
+import sys
+from typing import List, Dict, Hashable, Any
+
+import yaml
+
+CONFIG_WRITE_PATH = '/etc/openstack/'
+
+
+def merge_configs(configs: List[Dict[Hashable, Any]], public: bool = False) -> Dict[
+    Hashable, Any]:
+    """
+    Takes in a list of YAML configs in dict format and merges them all into
+    one unified config
+    :param configs: A list of configs, parsed directly by pyyaml
+    :param public: Tells if this is a clouds-public.yaml (Default: False)
+    :return: A dict which can be written to yaml via pyyaml
+    The dict is of format
+    {clouds,public-clouds}:
+      site1: ...
+      site2: ...
+    where each of the sites are deep-copied from each config file.
+    If a site appears in multiple configs, the last one loaded will be the one
+    that appears in the final merged config.
+    """
+    root_key = f"{'public-' if public else ''}clouds"
+    merge = {root_key: {}}
+    for config in configs:
+        merge[root_key].update(config[root_key])
+    return merge
+
+
+def main(config_paths: List[str]) -> int:
+    """
+    Combines multiple OpenStack configs (clouds.yaml) into 1 for use with
+    climeleon. Necessary for users who manage multiple sites.
+    :param config_paths: All of the clouds.yaml files which will be combined.
+    :return: An exit code
+    """
+    if not config_paths:
+        print("Usage: cloud-config-merge /path/to/config1 /path/to/config2 ...")
+        return 1
+
+    raw_configs = []
+    raw_public_configs = []
+    for config in config_paths:
+        if not os.path.exists(config):
+            print(f"Could not find config file: {config}")
+            return 1
+        with open(config, 'r') as f:
+            name, _ = os.path.splitext(f.name)
+            if name.endswith('-public'):
+                config_list = raw_public_configs
+            else:
+                config_list = raw_configs
+            config_list.append(yaml.safe_load(f.read()))
+
+    # If we have loaded valid configs, here we will merge them and write
+    # the merged configs to disk
+    if len(raw_configs) > 0:
+        final_config = merge_configs(raw_configs)
+        if not os.path.exists(CONFIG_WRITE_PATH):
+            os.mkdir(CONFIG_WRITE_PATH)
+        with open(os.path.join(CONFIG_WRITE_PATH, 'clouds.yaml'), 'w') as f:
+            f.write(yaml.dump(final_config, Dumper=yaml.Dumper))
+        # This is nested inside the regular config condition since the OpenStack docs
+        # seem to indicate that it doesn't make sens to have a clouds-public.yaml
+        # without a clouds.yaml
+        if len(raw_public_configs) > 0:
+            final_public_config = merge_configs(raw_public_configs, public=True)
+            with open(os.path.join(CONFIG_WRITE_PATH, 'clouds-public.yaml'), 'w') as f:
+                f.write(yaml.dump(final_public_config, Dumper=yaml.Dumper))
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))

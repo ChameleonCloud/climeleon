@@ -7,8 +7,8 @@ easier, namely through:
 
   - Reducing the overhead required to ssh/scp on to specific machines
   - Standardizing the execution environment for Python OpenStack clients
-  - Providing a set of default OpenStack client configurations and a means of
-    easily swapping them out.
+  - Providing a means of adminstrating multiple OpenStack clouds with one
+    tool
 
 ## Setup
 
@@ -61,6 +61,23 @@ some level of indirection, such as calling an external password manager to
 retrieve your credentials. For example, LastPass provides a `lpass` binary to
 assist. Mac OS X also has the `security` binary which acts as an intermediary to
 the OS X Keychain.
+
+### Cloud Configurations
+
+You can pass a custom OpenStack configuration file (clouds.yaml)
+to Climeleon with the `CHAMELEON_CONFIG` variable. If there is an associated
+clouds-public.yaml, Climeleon will resolve it automatically.
+
+If you manage multiple sites and have multiple OpenStack config files, you can
+still use the `CHAMELEON_CONFIG` variable with a space-separated list of these files:
+
+```
+CHAMELEON_CONFIG="/path/to/file1 /path/to/file2 ..."
+```
+
+The default value of `CHAMELEON_CONFIG` is `$HOME/.config/chameleon/clouds.yaml`. 
+This can be useful if you wish to manually concatenate your config files and/or only 
+use the `CHAMELEON_CONFIG` variable for testing purposes.
 
 Examples:
 

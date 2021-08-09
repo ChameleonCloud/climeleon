@@ -104,6 +104,27 @@ docker_options=(--rm --interactive --tty)
 docker_options+=(-e "OS_USERNAME=$CHAMELEON_USER")
 docker_options+=(-e "OS_PASSWORD=$password")
 docker_options+=(-e "OS_CLOUD=$cloud")
+
+# Allow users to configure OpenStack through all supported environment variables
+for var in $(env | grep '^OS_' | grep -v '^(OS_USERNAME|OS_PASSWORD|OS_CLOUD)'); do
+  docker_options+=(-e "$var")
+done
+
+# If a clouds.yaml is provided, use it
+# Else, OpenStack's default clouds.yaml will be used
+# All valid configs will mounted in /etc/openstack/clouds.d/ in cc-openstack
+if [ "${CHAMELEON_CONFIG+null}" == "null" ]; then
+  i=0
+  for config in $CHAMELEON_CONFIG; do
+    docker_options+=(-v "$config:/etc/openstack/clouds.d/clouds""$i"".yaml")
+    public_config="${config%.*}-public.${config##*.}"
+    if [ -f "$public_config" ]; then
+      docker_options+=(-v "$public_config:/etc/openstack/clouds.d/clouds""$i""-public.yaml")
+    fi
+    i=$((i+1))
+  done
+fi
+
 docker_options+=(-v "$PWD:/host")
 if [[ -z "${1:-}" ]]; then
   cmd="bash"

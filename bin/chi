@@ -75,7 +75,7 @@ else
   password="$(chameleon_password "$cloud")"
 fi
 
-if [[ -n "${CHAMELEON_USER:-}" ]]; then
+if [[ -z "${CHAMELEON_USER:-}" ]]; then
   echo "Please set CHAMELEON_USER to your Chameleon username."
   exit 1
 fi

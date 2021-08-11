@@ -3,7 +3,7 @@
 version="${1:-master}"
 tmp_dir="$(mktemp -d)"
 repo="https://github.com/ChameleonCloud/climeleon"
-install_dir="${CC_INSTALL_PATH:-/usr/local/bin}"
+install_dir="${CHI_INSTALL_PATH:-/usr/local/bin}"
 
 cleanup() {
   rm -rf "$tmp_dir"

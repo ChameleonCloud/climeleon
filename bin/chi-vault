@@ -42,4 +42,4 @@ case "${1:-}" in
     ;;
 esac
 
-"$DIR/cc-ssh" ssh -qt nimbusproject.mcs.anl.gov "${cmd[@]}"
+"$DIR/chi-ssh" ssh -qt nimbusproject.mcs.anl.gov "${cmd[@]}"

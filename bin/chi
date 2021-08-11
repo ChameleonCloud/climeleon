@@ -16,20 +16,20 @@ registry="docker.chameleoncloud.org"
 case "${1:-}" in
   docs)
     shift # past command
-    exec docker run --rm "$registry/cc-docs" "$@"
+    exec docker run --rm "$registry/chi-docs" "$@"
     exit $?
     ;;
   ssh|scp)
-    exec "$DIR/cc-ssh" "$@"
+    exec "$DIR/chi-ssh" "$@"
     exit $?
     ;;
   replacekey)
     shift # past command
-    exec "$DIR/cc-replacekey" "$@"
+    exec "$DIR/chi-replacekey" "$@"
     exit $?
     ;;
   update)
-    for image in cc-docs cc-openstack; do
+    for image in chi-docs chi-openstack; do
       printf "Updating $image command... "
       docker pull "$registry/$image" >/dev/null || break
       printf "($(docker inspect "$registry/$image" -f 'created={{.Created}}'))\n"
@@ -38,7 +38,7 @@ case "${1:-}" in
     ;;
   vault)
     shift # past command
-    exec "$DIR/cc-vault" "$@"
+    exec "$DIR/chi-vault" "$@"
     exit $?
     ;;
   *)
@@ -48,28 +48,28 @@ esac
 cloud="${1:-}"
 [[ -n "$cloud" ]] || {
   cat <<'USAGE'
-cc: CLI helper for Chameleon
+chi: CLI helper for Chameleon
 
 Execute:
-  cc CLOUD CMD: Execute CMD against the cloud configuration identified by CLOUD.
+  chi CLOUD CMD: Execute CMD against the cloud configuration identified by CLOUD.
     Any OpenStack client e.g., `openstack` or `blazar` can be run in this way.
     There are also a series of custom helper scripts that summarize or perform
     actions on the testbed. Running with no CMD opens an interactive shell.
 
   # Open interactive shell for TACC cloud (user creds)
-  cc tacc
+  chi tacc
   # List projects for TACC cloud (admin creds)
-  cc tacc_admin openstack project list
+  chi tacc_admin openstack project list
   # Inspect a Keystone token on UC cloud (admin creds)
-  cc uc_admin token-inspect TOKEN
+  chi uc_admin token-inspect TOKEN
 Subcommands: invoke with -h to see additional usage info.
-  cc vault: Nimbus vault secrets helper.
-  cc docs: Documentation search.
+  chi vault: Nimbus vault secrets helper.
+  chi docs: Documentation search.
 SSH/SCP:
-  cc [ssh|scp]: A wrapper for SSH/SCP that handles configuring jump hosts and
+  chi [ssh|scp]: A wrapper for SSH/SCP that handles configuring jump hosts and
     other connection complexities.
 Update:
-  cc update: Updates tool to latest version.
+  chi update: Updates tool to latest version.
 USAGE
   exit 1
 }
@@ -130,4 +130,4 @@ if [[ -z "${1:-}" ]]; then
   cmd="bash"
 fi
 
-exec docker run "${docker_options[@]}" "$registry/cc-openstack" "${cmd:-$@}"
+exec docker run "${docker_options[@]}" "$registry/chi-openstack" "${cmd:-$@}"

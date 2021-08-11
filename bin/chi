@@ -3,13 +3,6 @@ set -e -u -o pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-export ANL_USER="${ANL_USER:-$USER}"
-export UC_USER="${UC_USER:-$USER}"
-export NU_USER="${NU_USER:-$USER}"
-# A Chameleon user account is by default the same as the TACC one.
-export TACC_USER="${TACC_USER:-${CHAMELEON_USER:-$USER}}"
-export CHAMELEON_USER="${CHAMELEON_USER:-$TACC_USER}"
-
 registry="docker.chameleoncloud.org"
 
 # Shortcut for subcommands
@@ -19,26 +12,12 @@ case "${1:-}" in
     exec docker run --rm "$registry/chi-docs" "$@"
     exit $?
     ;;
-  ssh|scp)
-    exec "$DIR/chi-ssh" "$@"
-    exit $?
-    ;;
-  replacekey)
-    shift # past command
-    exec "$DIR/chi-replacekey" "$@"
-    exit $?
-    ;;
   update)
     for image in chi-docs chi-openstack; do
       printf "Updating $image command... "
       docker pull "$registry/$image" >/dev/null || break
       printf "($(docker inspect "$registry/$image" -f 'created={{.Created}}'))\n"
     done
-    exit $?
-    ;;
-  vault)
-    shift # past command
-    exec "$DIR/chi-vault" "$@"
     exit $?
     ;;
   *)
@@ -56,18 +35,14 @@ Execute:
     There are also a series of custom helper scripts that summarize or perform
     actions on the testbed. Running with no CMD opens an interactive shell.
 
-  # Open interactive shell for TACC cloud (user creds)
-  chi tacc
-  # List projects for TACC cloud (admin creds)
-  chi tacc_admin openstack project list
-  # Inspect a Keystone token on UC cloud (admin creds)
-  chi uc_admin token-inspect TOKEN
+  # Open interactive shell for <cloud>
+  chi <cloud>
+  # List projects for <cloud> cloud
+  chi <cloud> openstack project list
+  # Inspect a Keystone token on UC cloud
+  chi <cloud> token-inspect TOKEN
 Subcommands: invoke with -h to see additional usage info.
-  chi vault: Nimbus vault secrets helper.
   chi docs: Documentation search.
-SSH/SCP:
-  chi [ssh|scp]: A wrapper for SSH/SCP that handles configuring jump hosts and
-    other connection complexities.
 Update:
   chi update: Updates tool to latest version.
 USAGE
@@ -98,6 +73,11 @@ NOPASSWD
   exit 1
 else
   password="$(chameleon_password "$cloud")"
+fi
+
+if [[ -n "${CHAMELEON_USER:-}" ]]; then
+  echo "Please set CHAMELEON_USER to your Chameleon username."
+  exit 1
 fi
 
 docker_options=(--rm --interactive --tty)

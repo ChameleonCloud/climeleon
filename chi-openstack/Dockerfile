@@ -8,10 +8,12 @@ FROM base as builder
 ARG openstack_release=train
 
 RUN dnf group install -y "Development Tools" \
-  && dnf install -y openssl-devel python3-devel
-# RUN dnf install -y \
-#   build-base curl git linux-headers libffi-dev libxml2-dev libxslt-dev \
-#   openssl-dev python-dev
+  && dnf install -y \
+  libffi-devel `#needed for cffi on arm64, rdepend for paramiko and cryptography` \
+  libxml2-devel `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
+  libxslt-devel `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
+  openssl-devel \
+  python3-devel
 
 RUN mkdir -p /var/lib/chi
 RUN python3 -m venv /var/lib/chi/venv

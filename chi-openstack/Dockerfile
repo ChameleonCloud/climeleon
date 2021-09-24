@@ -9,9 +9,9 @@ ARG openstack_release=train
 
 RUN dnf group install -y "Development Tools" \
   && dnf install -y \
-  libffi-devel \
-  libxml2-devel \
-  libxslt-devel \
+  libffi-devel `#needed for cffi on arm64, rdepend for paramiko and cryptography` \
+  libxml2-devel `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
+  libxslt-devel `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
   openssl-devel \
   python3-devel
 

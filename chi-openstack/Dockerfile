@@ -32,7 +32,7 @@ RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstac
 RUN source /var/lib/chi/venv/bin/activate && \
   pip install \
   "python-chi>=0.10.0,<1.0.0" \
-  "python-chi-operator>=0.4.2"
+  "python-chi-operator>=0.4.3"
 
 # Runtime image
 FROM base

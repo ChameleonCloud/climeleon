@@ -1,9 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -e -u -o pipefail
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]:-${(%):-%x}}" )" && pwd )"
 
 registry="docker.chameleoncloud.org"
+suppress_warnings="${CHI_SUPPRESS_WARNINGS:-no}"
 
 # Shortcut for subcommands
 case "${1:-}" in
@@ -25,7 +26,7 @@ case "${1:-}" in
 esac
 
 cloud="${1:-}"
-[[ -n "$cloud" ]] || {
+[ -n "$cloud" ] || {
   cat <<'USAGE'
 chi: CLI helper for Chameleon
 
@@ -52,7 +53,8 @@ shift # Past 'cloud' positional arg
 
 password=""
 if ! command -v chameleon_password >/dev/null; then
-  cat <<NOPASSWD
+  if [ "$suppress_warnings" != "yes" ]; then 
+    cat <<NOPASSWD
 Could not find your Chameleon password!"
 Please ensure there is a chameleon_password() function
 (which prints your Chameleon Cloud password) available
@@ -70,12 +72,13 @@ The function will be passed the name of the cloud as
 its first argument, e.g. "chi_uc".
 
 NOPASSWD
-  exit 1
+    exit 1
+  fi
 else
   password="$(chameleon_password "$cloud")"
 fi
 
-if [[ -z "${CHAMELEON_USER:-}" ]]; then
+if [ -z "${CHAMELEON_USER:-}" ]; then
   echo "Please set CHAMELEON_USER to your Chameleon username."
   exit 1
 fi
@@ -93,14 +96,14 @@ done
 # If a clouds.yaml is provided, use it
 # Else, OpenStack's default clouds.yaml will be used
 # All valid configs will mounted in /etc/openstack/clouds.d/ in cc-openstack
-if [ "${CHAMELEON_CONFIG+null}" == "null" ]; then
+if [ "${CHAMELEON_CONFIG+null}" = "null" ]; then
   i=0
-  for config in $CHAMELEON_CONFIG; do
-    docker_options+=(-v "$config:/etc/openstack/clouds.d/clouds""$i"".yaml")
+  for config in "${CHAMELEON_CONFIG[@]}"; do
     public_config="${config%.*}-public.${config##*.}"
     if [ -f "$public_config" ]; then
       docker_options+=(-v "$public_config:/etc/openstack/clouds.d/clouds""$i""-public.yaml")
     fi
+    docker_options+=(-v "$config:/etc/openstack/clouds.d/clouds""$i"".yaml")
     i=$((i+1))
   done
 fi

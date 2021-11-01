@@ -30,15 +30,15 @@ define container_rule
 $(eval VERSION := $(shell git log -n1 --format=%h -- $(1)))
 $(eval IMAGE := $(DOCKER_REGISTRY)/$(1)-$(ARCH_TAG))
 
-$(1): $(STAMPS)/$(1).docker-$(VERSION)
+$(1)-$(ARCH_TAG): $(STAMPS)/$(1).docker-$(VERSION)-$(ARCH_TAG)
 	touch $$@
 
 .PHONY: $(1)-publish
-$(1)-publish: $(1)
+$(1)-publish: $(1)-$(ARCH_TAG)
 	docker push $(IMAGE):$(VERSION)
 	docker push $(IMAGE):latest
 
-$(STAMPS)/$(1).docker-$(VERSION): $(STAMPS)
+$(STAMPS)/$(1).docker-$(VERSION)-$(ARCH_TAG): $(STAMPS)
 	cd $(1) && docker build $(DOCKER_FLAGS) -t $(IMAGE):$(VERSION) .
 	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
 	touch $$@

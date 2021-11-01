@@ -1,5 +1,7 @@
 CHI_INSTALL_PATH ?= /usr/local/bin
 DOCKER_REGISTRY ?= docker.chameleoncloud.org
+DOCKER_FLAGS ?=
+ARCH_TAG ?= $(shell arch)
 
 CONTAINERS := chi-docs chi-openstack
 
@@ -26,7 +28,7 @@ $(STAMPS):
 
 define container_rule
 $(eval VERSION := $(shell git log -n1 --format=%h -- $(1)))
-$(eval IMAGE := $(DOCKER_REGISTRY)/$(1))
+$(eval IMAGE := $(DOCKER_REGISTRY)/$(1)-$(ARCH_TAG))
 
 $(1): $(STAMPS)/$(1).docker-$(VERSION)
 	touch $$@
@@ -37,7 +39,7 @@ $(1)-publish: $(1)
 	docker push $(IMAGE):latest
 
 $(STAMPS)/$(1).docker-$(VERSION): $(STAMPS)
-	cd $(1) && docker build -t $(IMAGE):$(VERSION) .
+	cd $(1) && docker build $(DOCKER_FLAGS) -t $(IMAGE):$(VERSION) .
 	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
 	touch $$@
 endef

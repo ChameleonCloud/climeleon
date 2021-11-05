@@ -53,11 +53,13 @@ USAGE
 }
 shift # Past 'cloud' positional arg
 
-password=""
-if ! command -v chameleon_password >/dev/null; then
-  if [ "$suppress_warnings" != "yes" ]; then 
-    cat <<NOPASSWD
-Could not find your Chameleon password!"
+password="${CHAMELEON_PASSWORD:-}"
+if [ -z "$password" ]; then
+  if ! command -v chameleon_password >/dev/null; then
+    if [ "$suppress_warnings" != "yes" ]; then
+      cat <<NOPASSWD
+Could not find your Chameleon password!
+
 Please ensure there is a chameleon_password() function
 (which prints your Chameleon Cloud password) available
 from your current shell and sub-shells.
@@ -70,14 +72,18 @@ For example:
   # export for use in sub-shells
   export -f chameleon_password
 
+Alternatively you can provide an executable named
+"chameleon_password" somewhere in \$PATH.
+
 The function will be passed the name of the cloud as
 its first argument, e.g. "chi_uc".
 
 NOPASSWD
-    exit 1
+      exit 1
+    fi
+  else
+    password="$(chameleon_password "$cloud")"
   fi
-else
-  password="$(chameleon_password "$cloud")"
 fi
 
 if [ -z "${CHAMELEON_USER:-}" ]; then

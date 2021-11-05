@@ -16,9 +16,8 @@ publish: $(CONTAINERS:%=%-publish)
 
 .PHONY: install
 install:
-	@ ln -sf $(CURDIR)/bin/* $(CHI_INSTALL_PATH)
-	@ echo "Installed to $(CHI_INSTALL_PATH)."
-	@ echo "Set CHI_INSTALL_PATH to overwrite this."
+	@ echo "Linking to $(CHI_INSTALL_PATH). Set CHI_INSTALL_PATH to override this."
+	@ ln -sf $(CURDIR)/bin/* $(CHI_INSTALL_PATH) 2>/dev/null || sudo ln -sf $(CURDIR)/bin/* $(CHI_INSTALL_PATH)
 
 # Tool builds
 STAMPS := .stamps

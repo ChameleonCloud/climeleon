@@ -37,8 +37,8 @@ $(1)-publish: $(1)
 	docker push $(IMAGE):$(VERSION)
 	docker push $(IMAGE):latest
 
-$(STAMPS)/$(1).docker-$(VERSION)-$(ARCH_TAG): $(STAMPS)
-	cd $(1) && docker build $(DOCKER_FLAGS) -t $(IMAGE):$(VERSION) .
+$(STAMPS)/$(1).docker-$(VERSION): $(STAMPS)
+	cd $(1) && docker buildx build --platform "linux/amd64,linux/arm64" -t $(IMAGE):$(VERSION) .
 	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
 	touch $$@
 endef

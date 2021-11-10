@@ -33,7 +33,6 @@ $(1): $(STAMPS)/$(1).docker-$(VERSION)
 
 $(STAMPS)/$(1).docker-$(VERSION): $(STAMPS)
 	cd $(1) && docker buildx build $(DOCKER_FLAGS) --tag $(IMAGE):$(VERSION) --tag $(IMAGE):latest --pull --push .
-endef
 
 # Docker builds use a rule macro
 $(foreach name, $(CONTAINERS), $(eval $(call container_rule,$(name))))

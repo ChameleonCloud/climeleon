@@ -23,8 +23,9 @@ make
 
 The scripts need to use your credentials in order to call the OpenStack API. The
 value of the `CHAMELEON_USER` environment variable will be used as your Chameleon
-username, so ensure it is set. You can include it in your .bashrc, or place it into a
-separate file and source it. For example:
+username, so ensure it is set. Depending on your shell's configuration, this can be
+`~/.zshenv`, `~/.zshrc`, `~/.bashrc`, `~/.bash_profile`, `~/.profile`, and so on. 
+You can include it in one of these files, or place it into a separate file and source it. For example:
 
 ```bash
 # File named .chi.env
@@ -34,7 +35,7 @@ export CHAMELEON_USER=my_cham_user
 export CHAMELEON_USER=my_email_address@example.com
 ```
 
-The scripts additionally look for a function in your shell called `chameleon_password`,
+The scripts additionally look for a function in your shell or `PATH` called `chameleon_password`,
 which you should provide. If you do not have this function sourced you will be
 notified and the script will bail. It is recommended that the function feature
 some level of indirection, such as calling an external password manager to

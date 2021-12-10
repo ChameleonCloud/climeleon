@@ -121,4 +121,4 @@ if [[ -z "${1:-}" ]]; then
   cmd="bash"
 fi
 
-exec docker run "${docker_options[@]}" "$registry/chi-openstack-$(arch)" "${cmd:-$@}"
+exec docker run "${docker_options[@]}" "$registry/chi-openstack:latest" "${cmd:-$@}"

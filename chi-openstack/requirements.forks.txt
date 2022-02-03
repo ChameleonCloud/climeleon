@@ -1,5 +1,5 @@
 git+https://github.com/ChameleonCloud/python-blazarclient@chameleoncloud/stable/train#egg=python-blazarclient
 git+https://github.com/ChameleonCloud/python-heatclient@stable/rocky#egg=python-heatclient
-git+https://github.com/openstack/python-zunclient@stable/ussuri#egg=python-zunclient
+git+https://github.com/ChameleonCloud/python-zunclient@chameleoncloud/ussuri#egg=python-zunclient
 git+https://github.com/openstack/python-cyborgclient@stable/ussuri#egg=python-cyborgclient
 python-swiftclient==3.11.1 

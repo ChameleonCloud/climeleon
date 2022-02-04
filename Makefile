@@ -1,6 +1,6 @@
 CHI_INSTALL_PATH ?= /usr/local/bin
 DOCKER_REGISTRY ?= docker.chameleoncloud.org
-DOCKER_FLAGS ?= --platform "linux/amd64,linux/arm64"
+DOCKER_FLAGS ?= 
 
 CONTAINERS := chi-docs chi-openstack
 
@@ -31,8 +31,11 @@ $(eval IMAGE := $(DOCKER_REGISTRY)/$(1))
 $(1): $(STAMPS)/$(1).docker-$(VERSION)
 	touch $$@
 
+$(1)-publish:
+	docker push $(IMAGE):$(VERSION)
+
 $(STAMPS)/$(1).docker-$(VERSION): $(STAMPS)
-	cd $(1) && docker buildx build $(DOCKER_FLAGS) --tag $(IMAGE):$(VERSION) --tag $(IMAGE):latest --pull --push .
+	cd $(1) && docker buildx build $(DOCKER_FLAGS) --tag $(IMAGE):$(VERSION) --tag $(IMAGE):latest --pull .
 endef
 
 # Docker builds use a rule macro

@@ -1,4 +1,4 @@
-FROM centos:8 as base
+FROM ubuntu:latest as base
 
 # Builder (helper) image
 # This image is used to install pip packages, which are then simply copied
@@ -7,13 +7,20 @@ FROM centos:8 as base
 FROM base as builder
 ARG openstack_release=train
 
-RUN dnf group install -y "Development Tools" \
-  && dnf install -y \
-  libffi-devel `#needed for cffi on arm64, rdepend for paramiko and cryptography` \
-  libxml2-devel `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
-  libxslt-devel `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
-  openssl-devel \
-  python3-devel
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+RUN apt-get update \
+  && apt-get install -y build-essential \
+  && apt-get install --no-install-recommends -y \
+    curl \
+    git-core \
+    libffi-dev  `#needed for cffi on arm64, rdepend for paramiko and cryptography` \
+    libxml2-dev `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
+    libxslt-dev `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
+    libssl-dev \
+    python3-dev \
+    python3-venv
 
 RUN mkdir -p /var/lib/chi
 RUN python3 -m venv /var/lib/chi/venv
@@ -21,7 +28,7 @@ RUN python3 -m venv /var/lib/chi/venv
 COPY requirements.txt /requirements.txt
 COPY requirements.forks.txt /requirements.forks.txt
 RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstack/requirements/stable/${openstack_release}/upper-constraints.txt" \
-  && source /var/lib/chi/venv/bin/activate \
+  && . /var/lib/chi/venv/bin/activate \
   && pip install --upgrade pip \
   && pip install -r requirements.txt -c upper-constraints.txt \
   && pip install -r requirements.forks.txt
@@ -29,7 +36,7 @@ RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstac
 # Install Chameleon libraries. These are in a separate layer because
 # they change way more often than the base requirements, and it's wasteful
 # to invalidate the previous layer all the time, as it's expensive.
-RUN source /var/lib/chi/venv/bin/activate && \
+RUN . /var/lib/chi/venv/bin/activate && \
   pip install \
   "python-chi>=0.10.0,<1.0.0" \
   "python-chi-operator>=0.4.3"
@@ -38,17 +45,13 @@ RUN source /var/lib/chi/venv/bin/activate && \
 FROM base
 
 # Install runtime libraries needed for wheels
-RUN dnf install -y \
+RUN apt-get update && apt-get install -y \
   bash \
   bc \
   curl \
   jq \
-  libffi \
-  libxml2 \
-  libxslt \
   openssl \
-  python3 \
-  which
+  python3
 
 # Provide a volume-mount for a current working directory (of the host)
 VOLUME ["/host"]

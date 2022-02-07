@@ -1,6 +1,6 @@
-FROM centos:8
+FROM ubuntu:latest 
 
-RUN dnf install -y bash curl jq
+RUN apt-get update && apt-get install --no-install-recommends -y bash curl jq
 
 RUN mkdir /work
 WORKDIR /work

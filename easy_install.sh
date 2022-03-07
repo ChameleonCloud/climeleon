@@ -10,20 +10,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-printf "GitHub username: "
-read username </dev/tty
-printf "GitHub password (OR Access Token if you're using 2FA): "
-read -s password </dev/tty
-echo
-
 pushd "$tmp_dir" >/dev/null
-curl -u "$username:$password" -sL "$repo/archive/$version.tar.gz" \
-  | tar -xz --strip-components=1 \
-  || {
-    echo "Error pulling repository from GitHub. Make sure your username and"
-    echo "password are correct, and that you have access to the repo!"
-    exit 1
-  }
+curl -sL "$repo/archive/$version.tar.gz" \
+  | tar -xz --strip-components=1
 echo "Copying scripts to $install_dir"
 cp bin/* "$install_dir/"
 popd >/dev/null

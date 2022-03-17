@@ -38,7 +38,7 @@ RUN curl -Sso /upper-constraints.txt "https://raw.githubusercontent.com/openstac
 # to invalidate the previous layer all the time, as it's expensive.
 RUN . /var/lib/chi/venv/bin/activate && \
   pip install \
-  "python-chi>=0.10.0,<1.0.0" \
+  "python-chi>=0.15.5,<1.0.0" \
   "python-chi-operator>=0.4.3"
 
 # Runtime image

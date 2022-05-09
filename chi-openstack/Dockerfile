@@ -5,7 +5,7 @@ FROM ubuntu:latest as base
 # to the runtime image. This is to avoid having to keep the build dependencies
 # for the python modules that require a build step.
 FROM base as builder
-ARG openstack_release=train
+ARG openstack_release=xena
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
@@ -13,14 +13,14 @@ ENV TZ=UTC
 RUN apt-get update \
   && apt-get install -y build-essential \
   && apt-get install --no-install-recommends -y \
-    curl \
-    git-core \
-    libffi-dev  `#needed for cffi on arm64, rdepend for paramiko and cryptography` \
-    libxml2-dev `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
-    libxslt-dev `#needed for lxml on arm64, rdepend for python-dracclient->python-chi-operator` \
-    libssl-dev \
-    python3-dev \
-    python3-venv
+  curl \
+  git-core \
+  libffi-dev  `#needed for cffi on arm64` \
+  libxml2-dev `#needed for lxml on arm64` \
+  libxslt-dev `#needed for lxml on arm64` \
+  libssl-dev \
+  python3-dev \
+  python3-venv
 
 RUN mkdir -p /var/lib/chi
 RUN python3 -m venv /var/lib/chi/venv
@@ -51,7 +51,12 @@ RUN apt-get update && apt-get install -y \
   curl \
   jq \
   openssl \
-  python3
+  python3 \
+  python3-distutils `# rdepend for various plugin loading` \
+  libffi-dev  `# rdepend for paramiko and cryptography` \
+  libxml2-dev `# rdepend for python-dracclient->python-chi-operator` \
+  libxslt-dev `# rdepend for python-dracclient->python-chi-operator`
+
 
 # Provide a volume-mount for a current working directory (of the host)
 VOLUME ["/host"]

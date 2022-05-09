@@ -1,7 +1,6 @@
-gnocchiclient
 osc-placement
 python-cinderclient
-python-doniclient>=0.5.1
+python-doniclient>=1.0.0
 python-dracclient
 python-glanceclient
 python-ironicclient

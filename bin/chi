@@ -5,7 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]:-${(%):-%x}}" )" && pwd )"
 
 registry="docker.chameleoncloud.org"
 suppress_warnings="${CHI_SUPPRESS_WARNINGS:-no}"
-arch="$(arch)"
+arch="$(uname -m)"
 
 # Shortcut for subcommands
 case "${1:-}" in
@@ -17,7 +17,7 @@ case "${1:-}" in
   update)
     for image in chi-docs chi-openstack; do
       printf "Updating $image command... "
-      image_fqdn="$registry/$image-$(arch)"
+      image_fqdn="$registry/$image-${arch}"
       docker pull "$image_fqdn" >/dev/null || break
       printf "($(docker inspect "$image_fqdn" -f 'created={{.Created}}'))\n"
     done

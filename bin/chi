@@ -106,7 +106,7 @@ done
 # All valid configs will mounted in /etc/openstack/clouds.d/ in cc-openstack
 if [ "${CHAMELEON_CONFIG+null}" = "null" ]; then
   i=0
-  for config in "${CHAMELEON_CONFIG[@]}"; do
+  for config in $CHAMELEON_CONFIG; do
     public_config="${config%.*}-public.${config##*.}"
     if [ -f "$public_config" ]; then
       docker_options+=(-v "$public_config:/etc/openstack/clouds.d/clouds""$i""-public.yaml")

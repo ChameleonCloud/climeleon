@@ -5,6 +5,7 @@ python-dracclient
 python-glanceclient
 python-ironicclient
 python-keystoneclient
+python-manilaclient
 python-neutronclient
 python-novaclient
 python-openstackclient

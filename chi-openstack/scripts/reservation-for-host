@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e -u -o pipefail
+
+node_name_or_uuid="${1}"
+ironic_uuid="$(openstack baremetal node show -c uuid -f value ${node_name_or_uuid})"
+blazar_resource_id="$(openstack reservation host show -c id -f value ${ironic_uuid})"
+
+echo "Node ${node_name_or_uuid} has the following reservations:"
+openstack reservation host allocation show \
+	-c reservations	-f value \
+	"${blazar_resource_id}" \
+	| jq '.'

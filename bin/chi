@@ -95,6 +95,7 @@ docker_options=(--rm --interactive --tty)
 docker_options+=(-e "OS_USERNAME=$CHAMELEON_USER")
 docker_options+=(-e "OS_PASSWORD=$password")
 docker_options+=(-e "OS_CLOUD=$cloud")
+docker_options+=(-e "CLIFF_FIT_WIDTH=1")
 
 # Allow users to configure OpenStack through all supported environment variables
 for var in $(env | grep '^OS_' | grep -v '^(OS_USERNAME|OS_PASSWORD|OS_CLOUD)'); do

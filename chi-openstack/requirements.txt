@@ -1,6 +1,6 @@
 osc-placement
 python-cinderclient
-python-doniclient>=1.0.0
+git+https://github.com/ChameleonCloud/python-doniclient.git
 python-dracclient
 python-glanceclient
 python-ironicclient
